@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>BlaBlaArticle - Лучший генератор статей</title>
+
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+  <link href="css/app.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="d-flex" id="wrapper">
+
+    <div class="bg-light border-right" id="sidebar-wrapper">
+      <div class="sidebar-heading">BlaBlaArticle</div>
+      <div class="list-group list-group-flush">
+        <a href="dashboard.html"                class="list-group-item list-group-item-action bg-light">Рабочий стол</a>
+        <a href="dashboard_create_article.html" class="list-group-item list-group-item-action bg-light">Создать статью</a>
+        <a href="dashboard_history.html"        class="list-group-item list-group-item-action active">История статей</a>
+        <a href="dashboard_subscription.html"   class="list-group-item list-group-item-action bg-light">Подписка</a>
+        <a href="dashboard_profile.html"        class="list-group-item list-group-item-action bg-light">Профиль</a>
+        <a href="dashboard_modules.html"        class="list-group-item list-group-item-action bg-light">Модули генератора</a>
+      </div>
+    </div>
+
+    <div id="page-content-wrapper">
+
+      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <button class="btn btn-primary" id="menu-toggle">Скрыть меню</button>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Показать/Скрыть навигацию">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Выйти</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="container-fluid">
+        <h1 class="mt-4">История статей</h1>
+        <div class="row">
+          
+          <div class="col-xl-8">
+
+            <table class="table table-hover table-bordered">
+              <thead class="thead-light">
+               <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Название</th>
+                  <th scope="col">Описание</th>
+                  <th scope="col">Просмотр</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Зачем пирожкам начинка</td>
+                  <td>Часто ли вам приходилось задумываться, зачем пирожкам начи...</td>
+                  <td><a href="dashboard_article_detail.html"><i class="fas fa-eye"></i></a> </td>
+                </tr>
+
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Программируем на php</td>
+                  <td>Php - это язык программирования на <b>php</b>, где вы <b>php</b> программист, а код написан на <b>php</b>...</td>
+                  <td><a href="dashboard_article_detail.html"><i class="fas fa-eye"></i></a> </td>
+                </tr>
+
+                <tr>
+                  <th scope="row">3</th>
+                  <td>Зачем пирожкам начинка</td>
+                  <td>Часто ли вам приходилось задумываться, зачем пирожкам начи...</td>
+                  <td><a href="dashboard_article_detail.html"><i class="fas fa-eye"></i></a> </td>
+                </tr>
+
+                <tr>
+                  <th scope="row">4</th>
+                  <td>Серь раз отъешь, один поспи</td>
+                  <td>Еда, еда, еда, еда, <br> вода, еда, еда, вода, <br> вода, вода, еда, еда, <br> с другими словами у Феди беда</td>
+                  <td><a href="dashboard_article_detail.html"><i class="fas fa-eye"></i></a> </td>
+                </tr>
+
+                <tr>
+                  <th scope="row">5</th>
+                  <td>Зачем пирожкам начинка</td>
+                  <td>Часто ли вам приходилось задумываться, зачем пирожкам начи...</td>
+                  <td><a href="dashboard_article_detail.html"><i class="fas fa-eye"></i></a> </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <nav aria-label="...">
+              <ul class="pagination">
+                <li class="page-item disabled">
+                  <a class="page-link" href="#" tabindex="-1">Назад</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item active">
+                  <a class="page-link" href="#">2 <span class="sr-only">(текущая)</span></a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                  <a class="page-link" href="#">Вперед</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+  </div>
+
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="js/dashboard.js"></script>
+
+</body>
+
+</html>

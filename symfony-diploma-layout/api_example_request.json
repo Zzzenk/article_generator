@@ -1,0 +1,22 @@
+{
+    "theme": "basic",
+    "keyword": {
+        "0": "EXAMPLE",
+        "1": "EXAMPLE",
+        "2": "EXAMPLE",
+        "3": "EXAMPLE",
+        "4": "EXAMPLE",
+        "5": "EXAAAAAMPLE",
+        "6": "EXAMPLES"
+    },
+    "title": "Тестовая статья",
+    "size": 1,
+    "words": [
+        {
+            "word": "EXAMPLE",
+            "count": 1
+        },
+        ...
+    ],
+    "images": ["https://via.placeholder.com/250x250"]
+}
