@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Security;
+namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
@@ -40,7 +40,8 @@ class RegistrationController extends AbstractController
                     $user,
                     $form->get('password')->getData()
                 )
-            );
+            )
+            ->setSubscription('FREE');
 
             $entityManager->persist($user);
             $entityManager->flush();

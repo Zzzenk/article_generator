@@ -21,15 +21,21 @@ class DashboardController extends AbstractController
     }
 
     #[Route('/dashboard', name: 'app_dashboard')]
-    public function dashboard()
+    public function dashboard(SubscriptionController $subscriptionController)
     {
-        return $this->render('dashboard/dashboard.html.twig');
-    }
+        $expiresAt = $this->userRepository->findOneBy(['email' => $this->security->getUser()->getUserIdentifier()], []);
 
-    #[Route('/dashboard/subscription', name: 'app_dashboard_subscription')]
-    public function subscription()
-    {
-        return $this->render('dashboard/dashboard_subscription.html.twig');
+        if ($expiresAt->getSubscriptionExpiresAt() == null) {
+            $interval = '';
+        } else {
+            $intervalObject = (new \DateTime('now'))->diff($expiresAt->getSubscriptionExpiresAt());
+            $interval = $intervalObject->format('%a дней');
+        }
+
+        return $this->render('dashboard/dashboard.html.twig', [
+            'subscription' => $subscriptionController->checkSubscription(),
+            'expiresIn' => $interval,
+        ]);
     }
 
     #[Route('/dashboard/profile', name: 'app_dashboard_profile')]

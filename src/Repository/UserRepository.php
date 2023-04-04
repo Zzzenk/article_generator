@@ -56,28 +56,29 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->save($user, true);
     }
 
-//    /**
-//     * @return User[] Returns an array of User objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function orderSubscription(string $email, string $subscription)
+    {
+        $sql = 'UPDATE user u 
+        SET u.subscription = :subscription, u.subscription_expires_at = :expiresAt
+        WHERE u.email = :email';
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt->bindValue('subscription', $subscription);
+        $stmt->bindValue('expiresAt', (new \DateTime('+1 week'))->format('Y-m-d H-i-s'));
+        $stmt->bindValue('email', $email);
+        $stmt->executeStatement();
 
-//    public function findOneBySomeField($value): ?User
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return true;
+    }
+
+    public function resetSubscription(string $email)
+    {
+        $sql = 'UPDATE user u
+        SET u.subscription = :subscription, u.subscription_expires_at = null
+        WHERE u.email = :email';
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt->bindValue('subscription', 'FREE');
+        $stmt->bindValue('email', $email);
+        $stmt->executeStatement();
+    }
+
 }
