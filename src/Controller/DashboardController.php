@@ -2,74 +2,147 @@
 
 namespace App\Controller;
 
+use App\Repository\GeneratedArticlesRepository;
+use App\Repository\ModuleRepository;
 use App\Repository\UserRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DashboardController extends AbstractController
 {
-
-
     private UserRepository $userRepository;
     private Security $security;
+    private ModuleRepository $moduleRepository;
+    private GeneratedArticlesRepository $generatedArticlesRepository;
 
-    public function __construct(UserRepository $userRepository, Security $security)
+    public function __construct(UserRepository $userRepository,
+                                Security $security,
+                                ModuleRepository $moduleRepository,
+                                GeneratedArticlesRepository $generatedArticlesRepository)
     {
         $this->userRepository = $userRepository;
         $this->security = $security;
+        $this->moduleRepository = $moduleRepository;
+        $this->generatedArticlesRepository = $generatedArticlesRepository;
     }
 
     #[Route('/dashboard', name: 'app_dashboard')]
-    public function dashboard(SubscriptionController $subscriptionController)
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function dashboard()
     {
-        $expiresAt = $this->userRepository->findOneBy(['email' => $this->security->getUser()->getUserIdentifier()], []);
+        $user = $this->security->getUser();;
+        $articlesThisMonth = $this->generatedArticlesRepository->lastCreatedArticles($user);
+        $latestArticle = end($articlesThisMonth);
+        $totalArticles = count($this->generatedArticlesRepository->findBy(['user' => $user->getId()]));
 
-        if ($expiresAt->getSubscriptionExpiresAt() == null) {
+        if ($user->getSubscriptionExpiresAt() == null || $user->getSubscriptionExpiresAt()->format('Y.m.d H:i:s') < (new \DateTime('3 days'))) {
             $interval = '';
         } else {
-            $intervalObject = (new \DateTime('now'))->diff($expiresAt->getSubscriptionExpiresAt());
-            $interval = $intervalObject->format('%a дней');
+            $interval = (new \DateTime('now'))->diff($user->getSubscriptionExpiresAt())->format('%a дней');
         }
 
         return $this->render('dashboard/dashboard.html.twig', [
-            'subscription' => $subscriptionController->checkSubscription(),
+            'menuActive' => 'dashboard',
+            'subscription' => $this->userRepository->checkSubscription(null),
             'expiresIn' => $interval,
+            'articlesThisMonth' => count($articlesThisMonth),
+            'totalArticles' => $totalArticles,
+            'latestArticle' => $latestArticle,
         ]);
     }
 
-    #[Route('/dashboard/profile', name: 'app_dashboard_profile')]
-    public function profile()
+    #[Route('/dashboard/templates', name: 'app_dashboard_templates')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function templates(Request $request, PaginatorInterface $paginator)
     {
-        $email = $this->security->getUser()->getUserIdentifier();
-        $firstName = $this->userRepository->findOneBy(['email' => $email], [])->getFirstName();
-        return $this->render('dashboard/dashboard_profile.html.twig', [
-            'email' => $this->security->getUser()->getUserIdentifier(),
-            'firstName' => $this->userRepository->findOneBy(['email' => $email], [])->getFirstName(),
+        if (!$this->security->isGranted('ROLE_PRO')) {
+            $disabled = 'disabled';
+        }
+
+        $user_id = $this->security->getUser()->getId();;
+        $pagination = $paginator->paginate(
+            $this->moduleRepository->findBy(['user' => $user_id]), /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            10 /*limit per page*/
+        );
+
+        return $this->render('dashboard/dashboard_templates.html.twig', [
+            'disabled' => $disabled ?? null,
+            'menuActive' => 'modules',
+            'pagination' => $pagination,
         ]);
     }
 
-    #[Route('/dashboard/modules', name: 'app_dashboard_modules')]
-    public function modules()
+    #[Route('/dashboard/template/add', name: 'app_dashboard_template_add')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function templateAdd(Request $request)
     {
-        return $this->render('dashboard/dashboard_modules.html.twig');
+        $user_id = $this->security->getUser()->getId();;
+        $this->moduleRepository->addTemplate($user_id, $request->query->get('title'), $request->query->get('code'));
+        $this->addFlash('success', 'Шаблон успешно добавлен');
+
+        return $this->redirectToRoute('app_dashboard_templates');
+    }
+
+    #[Route('/dashboard/template/delete/{id}', name: 'app_dashboard_template_delete')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function templateDelete(Request $request)
+    {
+        $user_id = $this->security->getUser()->getId();;
+        $this->moduleRepository->deleteTemplate($request->attributes->get('id'), $user_id);
+        $this->addFlash('success', 'Шаблон успешно удален');
+
+        return $this->redirectToRoute('app_dashboard_templates');
     }
 
     #[Route('/dashboard/history', name: 'app_dashboard_history')]
-    public function history()
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function history(PaginatorInterface $paginator, Request $request)
     {
-        return $this->render('dashboard/dashboard_history.html.twig');
+
+        $user_id = $this->security->getUser()->getId();
+        $generatedArticles = $this->generatedArticlesRepository->findBy(['user' => $user_id]);
+
+        $pagination = $paginator->paginate(
+            $generatedArticles, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            10 /*limit per page*/
+        );
+
+        return $this->render('dashboard/dashboard_history.html.twig', [
+            'menuActive' => 'history',
+            'pagination' => $pagination,
+            'generatedArticles' => $generatedArticles,
+        ]);
     }
 
-    #[Route('/dashboard/create_article', name: 'app_dashboard_create_article')]
-    public function create_article()
-    {
-        return $this->render('dashboard/dashboard_create_article.html.twig');
-    }
 
-    #[Route('/dashboard/article_detail', name: 'app_dashboard_article_detail')]
-    public function article_detail()
+    #[Route('/dashboard/article_detail/{id}', name: 'app_dashboard_article_detail')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function article_detail(Request $request)
     {
-        return $this->render('dashboard/dashboard_article_detail.html.twig');
+        $article_id = $request->attributes->get('id');
+        $generatedArticle = $this->generatedArticlesRepository->findOneBy(['id' => $article_id]);
+
+        if ($generatedArticle->getArticleImages()->getValues() != null) {
+            $images = $generatedArticle->getArticleImages()->getValues()[0]->getImageLink();
+        } else {
+            $images = null;
+        }
+
+        for ($i = 1; $i <= rand(2, 3); $i++) {
+            $paragraphs[] = $generatedArticle->getArticle() . PHP_EOL . PHP_EOL;
+        }
+        $paragraphs = implode(' ', $paragraphs);
+
+        return $this->render('dashboard/dashboard_article_detail.html.twig', [
+            'menuActive' => 'article_detail',
+            'keyword' => explode(',', $generatedArticle->getKeywords()),
+            'article' => $generatedArticle->getTemplate(),
+            ]);
     }
 }

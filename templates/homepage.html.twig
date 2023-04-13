@@ -2,7 +2,12 @@
 
 {% block body %}
     {% for flash_error in app.flashes('verify_email') %}
-        <div class="alert alert-success" role="alert">{{ flash_error }}</div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ flash_error }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
     {% endfor %}
 
     <header class="masthead text-white text-center">
@@ -10,12 +15,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-xl-9 mx-auto">
-                    <h1 class="mb-5">Создай уникальную статью идеально подходящую для вашего бизнеса, сайта или проекта!</h1>
+                    <h1 class="mb-5">Создайте уникальную статью идеально подходящую для вашего бизнеса, сайта или проекта!</h1>
                 </div>
                 <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
                     <div class="form-row">
                         <div class="col-12 col-md-6 mx-auto">
-                            <a type="submit" class="btn btn-block btn-lg btn-primary" href="{{ path('app_try') }}">Попробовать</a>
+                            <a type="submit" class="btn btn-block btn-lg btn-primary" href="{{ path }}">Попробовать</a>
                         </div>
                     </div>
                 </div>
@@ -29,28 +34,28 @@
                 <div class="col-lg-4">
                     <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
                         <div class="features-icons-icon d-flex">
-                            <i class="fas fa-comment-dots m-auto text-primary"></i>
+                            <i class="fas fa-keyboard m-auto text-primary"></i>
                         </div>
-                        <h3>Свои Слова</h3>
-                        <p class="lead mb-0">Вставляйте нужные вам слова!</p>
+                        <h3>Свои слова</h3>
+                        <p class="lead mb-0">Вставляйте нужные вам слова</p>
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
                         <div class="features-icons-icon d-flex">
-                            <i class="fas fa-photo-video m-auto text-primary"></i>
+                            <i class="fas fa-images m-auto text-primary"></i>
                         </div>
-                        <h3>Свои Изображения</h3>
-                        <p class="lead mb-0">Размещайте правильные изображения!</p>
+                        <h3>Свои изображения</h3>
+                        <p class="lead mb-0">Прикрепляйте правильные изображения</p>
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="features-icons-item mx-auto mb-0 mb-lg-3">
                         <div class="features-icons-icon d-flex">
-                            <i class="fas fa-network-wired m-auto text-primary"></i>
+                            <i class="fas fa-project-diagram m-auto text-primary"></i>
                         </div>
-                        <h3>API</h3>
-                        <p class="lead mb-0">Подключайтесь к сервису по API!</p>
+                        <h3>API доступ</h3>
+                        <p class="lead mb-0">Подключайтесь к сервису по API</p>
                     </div>
                 </div>
             </div>

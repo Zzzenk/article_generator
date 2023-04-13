@@ -6,25 +6,21 @@
 <div class="d-flex" id="wrapper">
 
     <div class="bg-light border-right" id="sidebar-wrapper">
-        <div class="sidebar-heading"><a href="{{ path('app_homepage') }}">Article Generator</a></div>
+        <div class="sidebar-heading"><a href="{{ path('app_homepage') }}"><img src="{{ asset('img/logo_with_title.png') }}" width="200"></a></div>
         <div class="list-group list-group-flush">
-            <a href="{{ path('app_dashboard') }}"                class="list-group-item list-group-item-action active">Рабочий стол</a>
-            <a href="{{ path('app_dashboard_create_article') }}" class="list-group-item list-group-item-action bg-light">Создать статью</a>
-            <a href="{{ path('app_dashboard_history') }}"        class="list-group-item list-group-item-action bg-light">История статей</a>
-            <a href="{{ path('app_dashboard_subscription') }}"   class="list-group-item list-group-item-action bg-light">Подписка</a>
-            <a href="{{ path('app_dashboard_profile') }}"        class="list-group-item list-group-item-action bg-light">Профиль</a>
-            <a href="{{ path('app_dashboard_modules') }}"        class="list-group-item list-group-item-action bg-light">Модули генератора</a>
+            <a href="{{ path('app_dashboard') }}"                class="list-group-item list-group-item-action {% if menuActive == 'dashboard' %}active{% else %}bg-light{% endif %}">Рабочий стол</a>
+            <a href="{{ path('app_dashboard_profile') }}"        class="list-group-item list-group-item-action {% if menuActive == 'profile' %}active{% else %}bg-light{% endif %}">Профиль</a>
+            <a href="{{ path('app_dashboard_subscription') }}"   class="list-group-item list-group-item-action {% if menuActive == 'subscription' %}active{% else %}bg-light{% endif %}">Подписка</a>
+            <a href="{{ path('app_dashboard_create_article') }}" class="list-group-item list-group-item-action {% if menuActive == 'create_article' %}active{% else %}bg-light{% endif %}">Создать статью</a>
+            <a href="{{ path('app_dashboard_history') }}"        class="list-group-item list-group-item-action {% if menuActive == 'history' %}active{% else %}bg-light{% endif %}">История статей</a>
+            <a href="{{ path('app_dashboard_templates') }}"        class="list-group-item list-group-item-action {% if menuActive == 'modules' %}active{% else %}bg-light{% endif %}">Шаблоны генератора</a>
         </div>
     </div>
 
     <div id="page-content-wrapper">
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-            <button class="btn btn-primary" id="menu-toggle">Скрыть меню</button>
-
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Показать/Скрыть навигацию">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <button class="btn btn-primary" id="menu-toggle"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
@@ -48,37 +44,49 @@
                         {% endif %}
                         <div class="card-columns dashboard">
                             <div class="card">
+                                <div class="card-header">
+                                    Всего создано статей
+                                </div>
                                 <div class="card-body">
-                                    <h1 class="card-title">13</h1>
-                                    <p class="card-text">статей создано</p>
+                                    <h1 class="card-title">{{ totalArticles }}</h1>
                                 </div>
                             </div>
                             <div class="card">
+                                <div class="card-header">
+                                    Статей создано в этом месяце
+                                </div>
                                 <div class="card-body">
-                                    <h1 class="card-title">8</h1>
-                                    <p class="card-text">в этом месяце</p>
+                                    <h1 class="card-title">{{ articlesThisMonth }}</h1>
                                 </div>
                             </div>
                             <div class="card">
+                                <div class="card-header">
+                                    Ваш уровень подписки
+                                </div>
                                 <div class="card-body">
                                     <h4 class="card-title">{{ subscription }}</h4>
-                                    <p class="card-text">Ваш уровень подписки</p>
                                     <a href="{{ path('app_dashboard_subscription') }}" class="btn btn-primary">{% if subscription != 'PRO' %}Улучшить{% else %}Тарифы{% endif %}</a>
                                 </div>
                             </div>
                             <div class="card">
+                                <div class="card-header">
+                                    Последняя статья
+                                </div>
                                 <div class="card-body">
-                                    <h5 class="card-title">Создать статью</h5>
-                                    <a href="{{ path('app_dashboard_create_article') }}" class="btn btn-primary">Создать</a>
+                                    <h5 class="card-title">{% if latestArticle %}{{ latestArticle.title }}{% endif %}</h5>
+                                    <p class="card-text">{% if latestArticle %}{{ latestArticle.article|u.truncate(200, '...')|raw }}{% else %}Нет сгенерированых статей{% endif %}</p>
+                                    {% if latestArticle %}<a href="{{ path('app_dashboard_article_detail', { id: latestArticle.id }) }}" class="btn btn-primary">Перейти</a>{% endif %}
                                 </div>
                             </div>
                             <div class="card">
+                                <div class="card-header">
+                                    Новая статья
+                                </div>
                                 <div class="card-body">
-                                    <h5 class="card-title">Почему квадрат не круглый?</h5>
-                                    <p class="card-text">При генерации контента <b>круг</b> статьи, вы можете наполнить его нужными словами <b>круг</b> для вашего бизнеса. Столько <b>круг</b> сколько <b>круг</b> нужно. Хоть все ими <b>круг</b> <b>круг</b> <b>круг</b> заполоните!.</p>
-                                    <a href="#" class="btn btn-primary">Подробнее</a>
+                                    <a href="{{ path('app_dashboard_create_article') }}" class="btn btn-primary">Создать</a>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

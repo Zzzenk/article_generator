@@ -21,13 +21,13 @@
                                         <h6 class="card-price text-center">$0<span class="period">/неделя</span></h6>
                                         <hr>
                                         <ul class="fa-ul">
-                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Возможность создать более 1 статьи</li>
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Возможность создать 2 статьи за 2 часа</li>
                                             <li><span class="fa-li"><i class="fas fa-check"></i></span>Базовые возможности генератора</li>
                                             <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Продвинутые возможности генератора</li>
-                                            <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Свои модули</li>
+                                            <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Свои шаблоны</li>
                                         </ul>
-                                        {% if subscription == 'FREE' %}
-                                            <a href="#" class="btn btn-block btn-secondary text-uppercase" disabled>Текущий уровень</a>
+                                        {% if is_granted('ROLE_FREE') %}
+                                            <a href="#" class="btn btn-block btn-secondary text-uppercase" disabled>Текущая подписка</a>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -39,14 +39,14 @@
                                         <h6 class="card-price text-center">$9<span class="period">/неделя</span></h6>
                                         <hr>
                                         <ul class="fa-ul">
-                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Возможность создать более 1 статьи</li>
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Возможность создать 2 статьи за 2 часа</li>
                                             <li><span class="fa-li"><i class="fas fa-check"></i></span>Базовые возможности генератора</li>
                                             <li><span class="fa-li"><i class="fas fa-check"></i></span>Продвинутые возможности генератора</li>
-                                            <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Свои модули</li>
+                                            <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Свои шаблоны</li>
                                         </ul>
-                                        {% if subscription == 'PLUS' %}
-                                            <a href="#" class="btn btn-block btn-secondary text-uppercase" disabled>Текущий уровень</a>
-                                        {% elseif subscription == 'FREE' %}
+                                        {% if is_granted('ROLE_PLUS') %}
+                                            <a href="#" class="btn btn-block btn-secondary text-uppercase" disabled>Текущая подписка</a>
+                                        {% elseif is_granted('ROLE_FREE') %}
                                             <form action="{{ path('app_dashboard_subscription_order') }}" method="post">
                                                 <input type="hidden" value="PLUS" name="order_subscription">
                                                 <button class="btn btn-block btn-primary text-uppercase">Оформить</button>
@@ -65,11 +65,11 @@
                                             <li><span class="fa-li"><i class="fas fa-check"></i></span><strong>Безлимитная генерация статей для вашего аккаунта</strong></li>
                                             <li><span class="fa-li"><i class="fas fa-check"></i></span>Базовые возможности генератора</li>
                                             <li><span class="fa-li"><i class="fas fa-check"></i></span>Продвинутые возможности генератора</li>
-                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Свои модули</li>
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Свои шаблоны</li>
                                         </ul>
-                                        {% if subscription == 'PRO' %}
-                                            <a href="#" class="btn btn-block btn-secondary text-uppercase" disabled>Текущий уровень</a>
-                                        {% elseif subscription == 'PLUS' or subscription == 'FREE' %}
+                                        {% if is_granted('ROLE_PRO') %}
+                                            <a href="#" class="btn btn-block btn-secondary text-uppercase" disabled>Текущая подписка</a>
+                                        {% elseif is_granted("ROLE_PLUS") or is_granted("ROLE_FREE") %}
                                             <form action="{{ path('app_dashboard_subscription_order') }}" method="post">
                                                 <input type="hidden" value="PRO" name="order_subscription">
                                                 <button class="btn btn-block btn-primary text-uppercase">Оформить</button>
