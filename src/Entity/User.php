@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -36,11 +38,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $isVerified = false;
 
-    #[ORM\Column(length: 255)]
-    private ?string $subscription = null;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $subscriptionExpiresAt = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ApiToken::class, orphanRemoval: true)]
+    private Collection $apiTokens;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $newEmail = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Module::class, orphanRemoval: true)]
+    private Collection $modules;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: GeneratedArticles::class, orphanRemoval: true)]
+    private Collection $generatedArticles;
+
+    public function __construct()
+    {
+        $this->apiTokens = new ArrayCollection();
+        $this->modules = new ArrayCollection();
+        $this->generatedArticles = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -136,18 +154,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSubscription(): ?string
-    {
-        return $this->subscription;
-    }
-
-    public function setSubscription(string $subscription): self
-    {
-        $this->subscription = $subscription;
-
-        return $this;
-    }
-
     public function getSubscriptionExpiresAt(): ?\DateTimeInterface
     {
         return $this->subscriptionExpiresAt;
@@ -156,6 +162,108 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setSubscriptionExpiresAt(?\DateTimeInterface $subscriptionExpiresAt): self
     {
         $this->subscriptionExpiresAt = $subscriptionExpiresAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ApiToken>
+     */
+    public function getApiTokens(): Collection
+    {
+        return $this->apiTokens;
+    }
+
+    public function addApiToken(ApiToken $apiToken): self
+    {
+        if (!$this->apiTokens->contains($apiToken)) {
+            $this->apiTokens->add($apiToken);
+            $apiToken->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApiToken(ApiToken $apiToken): self
+    {
+        if ($this->apiTokens->removeElement($apiToken)) {
+            // set the owning side to null (unless already changed)
+            if ($apiToken->getUser() === $this) {
+                $apiToken->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getNewEmail(): ?string
+    {
+        return $this->newEmail;
+    }
+
+    public function setNewEmail(?string $newEmail): self
+    {
+        $this->newEmail = $newEmail;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Module>
+     */
+    public function getModules(): Collection
+    {
+        return $this->modules;
+    }
+
+    public function addModule(Module $module): self
+    {
+        if (!$this->modules->contains($module)) {
+            $this->modules->add($module);
+            $module->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeModule(Module $module): self
+    {
+        if ($this->modules->removeElement($module)) {
+            // set the owning side to null (unless already changed)
+            if ($module->getUser() === $this) {
+                $module->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GeneratedArticles>
+     */
+    public function getGeneratedArticles(): Collection
+    {
+        return $this->generatedArticles;
+    }
+
+    public function addGeneratedArticle(GeneratedArticles $generatedArticle): self
+    {
+        if (!$this->generatedArticles->contains($generatedArticle)) {
+            $this->generatedArticles->add($generatedArticle);
+            $generatedArticle->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGeneratedArticle(GeneratedArticles $generatedArticle): self
+    {
+        if ($this->generatedArticles->removeElement($generatedArticle)) {
+            // set the owning side to null (unless already changed)
+            if ($generatedArticle->getUser() === $this) {
+                $generatedArticle->setUser(null);
+            }
+        }
 
         return $this;
     }

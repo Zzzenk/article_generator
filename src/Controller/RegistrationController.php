@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\ApiToken;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
@@ -29,6 +30,8 @@ class RegistrationController extends AbstractController
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
+        $apiToken = new ApiToken($user);
+
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
@@ -41,9 +44,12 @@ class RegistrationController extends AbstractController
                     $form->get('password')->getData()
                 )
             )
-            ->setSubscription('FREE');
+            ->setRoles(["ROLE_USER", "ROLE_FREE"]);
+
+            $apiToken->setToken(sha1(uniqid('token')));
 
             $entityManager->persist($user);
+            $entityManager->persist($apiToken);
             $entityManager->flush();
 
             // generate a signed url and email it to the user
@@ -52,7 +58,7 @@ class RegistrationController extends AbstractController
                     ->from(new Address('noreply@articlegenerator.ru', 'Article Generator - генератор статей'))
                     ->to($user->getEmail())
                     ->subject('Подтвердите свой Email')
-                    ->htmlTemplate('security/confirmation_email.html.twig')
+                    ->htmlTemplate('email/confirmation_email.html.twig')
             );
             // do anything else you need here, like send an email
 

@@ -20,7 +20,7 @@
 {% block navbar %}
 <nav class="navbar navbar-light bg-light static-top">
     <div class="container">
-        <span class="navbar-brand"><a href="{{ path('app_homepage') }}">Article Generator</a></span>
+        <span class="navbar-brand"><a href="{{ path('app_homepage') }}"><img src="{{ asset('img/logo_with_title.png') }}" width="200"></a></span>
         <a class="js-scroll-trigger" href="{{ path('app_homepage') }}#services">Сервисы</a>
         <a class="js-scroll-trigger" href="{{ path('app_homepage') }}#author">Автор</a>
         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
@@ -32,7 +32,7 @@
                             <img class="nav-profile-img rounded-circle" src="{{ asset('img/zenk.jpg') }}" width="40">
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{ path('app_dashboard') }}">Профиль</a>
+                            <a class="dropdown-item" href="{{ path('app_dashboard') }}">Личный кабинет</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ path('app_logout') }}">Выйти</a>
                         </div>

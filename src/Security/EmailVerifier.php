@@ -50,4 +50,24 @@ class EmailVerifier
         $this->entityManager->persist($user);
         $this->entityManager->flush();
     }
+
+    public function changeUserEmail(string $verifyEmailRouteName, UserInterface $user, TemplatedEmail $email, string $newEmail): void
+    {
+        $signatureComponents = $this->verifyEmailHelper->generateSignature(
+            $verifyEmailRouteName,
+            $user->getId(),
+            $user->getEmail(),
+            ['id' => $user->getId()]
+        );
+
+        $context = $email->getContext();
+        $context['signedUrl'] = $signatureComponents->getSignedUrl();
+        $context['expiresAtMessageKey'] = $signatureComponents->getExpirationMessageKey();
+        $context['expiresAtMessageData'] = $signatureComponents->getExpirationMessageData();
+        $context['newEmail'] = $newEmail;
+
+        $email->context($context);
+
+        $this->mailer->send($email);
+    }
 }
