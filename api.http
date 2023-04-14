@@ -1,6 +1,7 @@
 POST http://localhost/api/article
+Content-Type: application/json
 Accept: application/json
-Authorization: Bearer 73bd945f67acbdcb1912d18b14b33dc039a195f3
+Authorization: Bearer ef5bde3dd67f678b83d6c6e822f5762a0bac58d3
 
 {
    "theme": "tech",
@@ -14,7 +15,7 @@ Authorization: Bearer 73bd945f67acbdcb1912d18b14b33dc039a195f3
        "keyword5": "EXAAAAAMPLE",
        "keyword6": "EXAMPLES"
    },
-   "size": 1,
-   "word1":
+   "sizeFrom": 1,
+   "word1": null,
    "images": ["https://via.placeholder.com/250x250"]
 }

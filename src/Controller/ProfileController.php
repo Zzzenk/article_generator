@@ -28,7 +28,6 @@ class ProfileController extends AbstractController
         $this->security = $security;
     }
 
-
     #[Route('/dashboard/profile', name: 'app_dashboard_profile')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function profile()

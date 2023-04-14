@@ -115,24 +115,24 @@
                         <div class="row">
                             <div class="col">
                                 <div class="form-label-group">
-                                    {{ form_widget(articleCreateForm.sizeFromField, {
+                                    {{ form_widget(articleCreateForm.sizeFrom, {
                                         'attr': {'class': 'form-control',
                                             'autofocus': 'autofocus',
                                             'placeholder': 'Размер статьи от',
-                                            'value': articleCreateForm.vars.value.sizeFromField ?? null }}
+                                            'value': articleCreateForm.vars.value.sizeFrom ?? null }}
                                     ) }}
-                                    {{ form_label(articleCreateForm.sizeFromField) }}
+                                    {{ form_label(articleCreateForm.sizeFrom) }}
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="form-label-group">
-                                    {{ form_widget(articleCreateForm.sizeToField, {
+                                    {{ form_widget(articleCreateForm.sizeTo, {
                                         'attr': {'class': 'form-control',
                                             'autofocus': 'autofocus',
                                             'placeholder': 'до',
-                                            'value': articleCreateForm.vars.value.sizeToField ?? null }}
+                                            'value': articleCreateForm.vars.value.sizeTo ?? null }}
                                     ) }}
-                                    {{ form_label(articleCreateForm.sizeToField) }}
+                                    {{ form_label(articleCreateForm.sizeTo) }}
                                 </div>
                             </div>
                         </div>
@@ -144,48 +144,48 @@
                                 <div class="row">
                                     <div class="col">
                                         <div class="form-label-group">
-                                            {{ form_widget(articleCreateForm.promotedWord1, {
+                                            {{ form_widget(articleCreateForm.word1, {
                                                 'attr': {'class': 'form-control',
                                                     'autofocus': 'autofocus',
                                                     'placeholder': 'Продвигаемое слово 1',
-                                                    'value': articleCreateForm.vars.value.promotedWord1 ?? null }}
+                                                    'value': articleCreateForm.vars.value.word1 ?? null }}
                                             ) }}
-                                            {{ form_label(articleCreateForm.promotedWord1) }}
+                                            {{ form_label(articleCreateForm.word1) }}
                                         </div>
                                     </div>
                                     <div class="col">
                                         <div class="form-label-group">
-                                            {{ form_widget(articleCreateForm.promotedWord1Count, {
+                                            {{ form_widget(articleCreateForm.word1Count, {
                                                 'attr': {'class': 'form-control',
                                                     'autofocus': 'autofocus',
                                                     'placeholder': 'кол-во',
-                                                    'value': articleCreateForm.vars.value.promotedWord1Count ?? null }}
+                                                    'value': articleCreateForm.vars.value.word1Count ?? null }}
                                             ) }}
-                                            {{ form_label(articleCreateForm.promotedWord1Count) }}
+                                            {{ form_label(articleCreateForm.word1Count) }}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
                                         <div class="form-label-group">
-                                            {{ form_widget(articleCreateForm.promotedWord2, {
+                                            {{ form_widget(articleCreateForm.word2, {
                                                 'attr': {'class': 'form-control',
                                                     'autofocus': 'autofocus',
                                                     'placeholder': 'Продвигаемое слово 2',
-                                                    'value': articleCreateForm.vars.value.promotedWord2 ?? null }}
+                                                    'value': articleCreateForm.vars.value.word2 ?? null }}
                                             ) }}
-                                            {{ form_label(articleCreateForm.promotedWord2) }}
+                                            {{ form_label(articleCreateForm.word2) }}
                                         </div>
                                     </div>
                                     <div class="col">
                                         <div class="form-label-group">
-                                            {{ form_widget(articleCreateForm.promotedWord2Count, {
+                                            {{ form_widget(articleCreateForm.word2Count, {
                                                 'attr': {'class': 'form-control',
                                                     'autofocus': 'autofocus',
                                                     'placeholder': 'кол-во',
-                                                    'value': articleCreateForm.vars.value.promotedWord2Count ?? null }}
+                                                    'value': articleCreateForm.vars.value.word2Count ?? null }}
                                             ) }}
-                                            {{ form_label(articleCreateForm.promotedWord2Count) }}
+                                            {{ form_label(articleCreateForm.word2Count) }}
                                         </div>
                                     </div>
                                 </div>

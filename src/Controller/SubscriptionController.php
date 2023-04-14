@@ -61,7 +61,7 @@ class SubscriptionController extends AbstractController
                 'subscription' => $subscription,
                 'expiresAt' => (new \DateTime('+7 days'))->format('Y.m.d H:i:s'),
             ]);
-        //$this->mailer->send($email);
+        $this->mailer->send($email);
 
         return $this->redirectToRoute('app_dashboard_subscription');
     }

@@ -11,7 +11,6 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Image;
 
 class ArticleCreateType extends AbstractType
 {
@@ -76,32 +75,32 @@ class ArticleCreateType extends AbstractType
                 'label' => 'Множественное число',
                 'disabled' => $disabled || $disabledFree,
             ])
-            ->add('sizeFromField', IntegerType::class, [
+            ->add('sizeFrom', IntegerType::class, [
                 'required' => false,
                 'label' => 'Размер статьи от',
                 'disabled' => $disabled ?? false,
             ])
-            ->add('sizeToField', IntegerType::class, [
+            ->add('sizeTo', IntegerType::class, [
                 'required' => false,
                 'label' => 'до',
                 'disabled' => $disabled ?? false,
             ])
-            ->add('promotedWord1', null, [
+            ->add('word1', null, [
                 'required' => false,
                 'label' => 'Продвигаемое слово 1',
                 'disabled' => $disabled ?? false,
             ])
-            ->add('promotedWord1Count', IntegerType::class, [
+            ->add('word1Count', IntegerType::class, [
                 'required' => false,
                 'label' => 'кол-во',
                 'disabled' => $disabled ?? false,
             ])
-            ->add('promotedWord2', null, [
+            ->add('word2', null, [
                 'required' => $disabled ?? false,
                 'label' => 'Продвигаемое слово 2',
                 'disabled' => $disabled || $disabledFree,
             ])
-            ->add('promotedWord2Count', IntegerType::class, [
+            ->add('word2Count', IntegerType::class, [
                 'required' => false,
                 'label' => 'кол-во',
                 'disabled' => $disabled || $disabledFree,

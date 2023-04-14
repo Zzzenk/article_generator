@@ -39,24 +39,27 @@ class ArticleContentRepository extends ServiceEntityRepository
         }
     }
 
-    public function findAllArticles()
-    {
-        $sql = 'SELECT body FROM article_content';
-        return $this->getEntityManager()->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
-    }
-
     public function themes()
     {
-        $sql = 'SELECT theme FROM article_content';
-        $array = $this->getEntityManager()->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociativeIndexed();
+        $sql = 'SELECT code, theme FROM article_content';
+        $array = $this->getEntityManager()->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
 
-        $themes = array();
-        foreach ($array as $key => $row) {
-            $themes[] = $key;
+        foreach ($array as $arr) {
+                $implodedArray[] = (implode(',', $arr));
         }
-        $themes = array_combine($themes, $themes);
 
-        return array_unique($themes);
+        $keysList = explode(',', implode(',', array_unique($implodedArray)));
+
+        foreach ($keysList as $key => $item) {
+            if (!is_float($key/2)) {
+                $themes[$item] = null;
+                $prevItem = $item;
+            } else {
+                $themes[$prevItem] = $item;
+            }
+        }
+
+        return $themes;
     }
 
 }

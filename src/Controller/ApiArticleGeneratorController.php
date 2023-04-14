@@ -8,6 +8,7 @@ use App\Repository\UserRepository;
 use App\Service\ArticleGeneratorService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ApiArticleGeneratorController extends AbstractController
@@ -29,14 +30,12 @@ class ApiArticleGeneratorController extends AbstractController
     }
 
     #[Route('/api/article', name: 'app_api_article_generator')]
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $token = 'e5010f8185e4582f404b49de3c760e51c735a42f';
-        $user = $this->apiTokenRepository->findOneBy(['token' => $token])->getUser();
-        $subscription = $this->userRepository->checkSubscription($token);
-        $themeCode = 'tech';
-        $theme = $this->articleContentRepository->findOneBy(['code' => $themeCode]);
+        $parameters = json_decode($request->getContent(), true);
 
+        $token = substr($request->headers->get('Authorization'), 7);
+        $theme = $this->articleContentRepository->findOneBy(['code' => $parameters['theme']]);
 
         if ($theme === null) {
             $reply = $this->json([
@@ -46,44 +45,47 @@ class ApiArticleGeneratorController extends AbstractController
             $reply = $this->json([
                 'error' => 'Вы уже сгенерировали 2 статьи за последние 2 часа. Оформите подписку PRO, чтобы снять ограничения',
             ]);
+        } elseif ($parameters['theme'] == null || $parameters['title'] == null) {
+            $reply = $this->json([
+                'error' => 'Отсутствуют обязательные параметры: theme, title',
+            ]);
         } else {
             $requestArray = [
-                "theme" => $theme->getTheme(),
-                "title" => "Заголовок",
-                "keyword0" => null,
-                "keyword1" => null,
-                "keyword2" => null,
-                "keyword3" => null,
-                "keyword4" => null,
-                "keyword5" => null,
-                "keyword6" => null,
-                "sizeFromField" => null,
-                "sizeToField" => null,
-                "promotedWord1" => null,
-                "promotedWord1Count" => null,
-                "promotedWord2" => null,
-                "promotedWord2Count" => null,
-                "imageLink" => null,
+                "theme" => $parameters['theme'],
+                "title" => $parameters['title'],
+                "keyword0" => $parameters['keywords']['keyword0'],
+                "keyword1" => $parameters['keywords']['keyword1'],
+                "keyword2" => $parameters['keywords']['keyword2'],
+                "keyword3" => $parameters['keywords']['keyword3'],
+                "keyword4" => $parameters['keywords']['keyword4'],
+                "keyword5" => $parameters['keywords']['keyword5'],
+                "keyword6" => $parameters['keywords']['keyword6'],
+                "sizeFrom" => $parameters['sizeFrom'] ?? null,
+                "sizeTo" => $parameters['sizeTo'] ?? null,
+                "word1" => $parameters['word1'] ?? null,
+                "word1Count" => $parameters['word1Count'] ?? null,
+                "word2" => $parameters['word2'] ?? null,
+                "word2Count" => $parameters['word2Count'] ?? null,
+                "images" => $parameters['images'] ?? null,
             ];
 
-            if ($subscription == 'FREE') {
-                $requestArray['keyword1'] = null;
-                $requestArray['keyword2'] = null;
-                $requestArray['keyword3'] = null;
-                $requestArray['keyword4'] = null;
-                $requestArray['keyword5'] = null;
-                $requestArray['keyword6'] = null;
-                $requestArray['promotedWord2'] = null;
-                $requestArray['promotedWord2Count'] = null;
-                $requestArray['imageLink'] = null;
+            if ($this->userRepository->checkSubscription($token) == 'FREE') {
+                $parameters['keywords']['keyword1'] = null;
+                $parameters['keywords']['keyword2'] = null;
+                $parameters['keywords']['keyword3'] = null;
+                $parameters['keywords']['keyword4'] = null;
+                $parameters['keywords']['keyword5'] = null;
+                $parameters['keywords']['keyword6'] = null;
+                $requestArray['word2'] = null;
+                $requestArray['word2Count'] = null;
+                $requestArray['images'] = null;
             }
 
-            $generated = $this->articleGeneratorService->generateArticle($user, $requestArray, null, true);
-            $article = $this->articleGeneratorService->prepareArticleForApi($generated);
+            $generated = $this->articleGeneratorService->generateArticle($this->apiTokenRepository->findOneBy(['token' => $token])->getUser(), $requestArray, $requestArray['images'], true);
 
             $reply = $this->json([
                 'title' => $generated['title'],
-                'article' => $article,
+                'article' => $generated['article'],
             ]);
 
         }

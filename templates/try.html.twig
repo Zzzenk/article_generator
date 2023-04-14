@@ -34,8 +34,8 @@
                             <label for="title">Заголовок статьи</label>
                         </div>
                         <div class="form-label-group">
-                            <input type="text" id="promotedWord1" name="promotedWord1" class="form-control" placeholder="Продвигаемое слово" value="{{ app.request.request.get('promotedWord1') }}" {{ disabled }} required>
-                            <label for="promotedWord1">Продвигаемое слово</label>
+                            <input type="text" id="word1" name="word1" class="form-control" placeholder="Продвигаемое слово" value="{{ app.request.request.get('word1') }}" {{ disabled }} required>
+                            <label for="word1">Продвигаемое слово</label>
                         </div>
 
                         <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Попробовать</button>
@@ -56,16 +56,16 @@
 
                     <div class="row">
                         <div class="p-3">
-                            <h2>Добавляйте свои слова</h2>
-                            <p class="lead mb-0">{% if paragraph %}{{ paragraph|raw }}{% else %}При генерации контента статьи, вы можете наполнить его нужными словами для вашего бизнеса. Столько сколько нужно. Хоть все ими заполоните!{% endif %}</p>
+                            <h2>{% if title is null %}Добавляйте свои слова{% endif %}</h2>
+                            <p class="lead mb-0">{% if article %}{{ article|raw }}{% else %}При генерации контента статьи, вы можете наполнить его нужными словами для вашего бизнеса. Столько сколько нужно. Хоть все ими заполоните!{% endif %}</p>
                         </div>
                     </div>
                     <div class="row">
                         <div class="showcase-text p-3">
                             <div class="media">
                                 <div class="media-body">
-                                    <h2>Вставляйте изображения</h2>
-                                    <p class="lead mb-0">{% if paragraph %}{{ paragraph|raw }}{% else %}Надоели стандартные красивые изображения. Прикрепляйте к вашим статьям свою уникальные фотографии. Смазанные, с пальцем на пол фотографии, с кривым лицом. Все пойдет - вы здесь главный!{% endif %}</p>
+                                    <h2>{% if title is null %}Вставляйте изображения{% endif %}</h2>
+                                    <p class="lead mb-0">{% if article %}{{ article|raw }}{% else %}Надоели стандартные красивые изображения. Прикрепляйте к вашим статьям свою уникальные фотографии. Смазанные, с пальцем на пол фотографии, с кривым лицом. Все пойдет - вы здесь главный!{% endif %}</p>
                                 </div>
                                 <img class="ml-3" src="{{ asset('img/bg-showcase-2.jpg') }}" width="518" height="345" alt="">
                             </div>
@@ -74,8 +74,8 @@
                     </div>
                     <div class="row">
                         <div class="p-3">
-                            <h2>Интегрируйтесь по API</h2>
-                            <p class="lead mb-0">{% if paragraph %}{{ paragraph|raw }}{% else %}Придумайте и настройте свою собственную интеграцию с сервисом. Нужно ответить на комментарий в соц.сети - получите его по API. Нужно написать новую статью по программированию - получите ее по API. Хотите вкусно покушать - сходите за едой, а статью пускай за вас напишет API!{% endif %}</p>
+                            <h2>{% if title is null %}Интегрируйтесь по API{% endif %}</h2>
+                            <p class="lead mb-0">{% if article %}{{ article|raw }}{% else %}Придумайте и настройте свою собственную интеграцию с сервисом. Нужно ответить на комментарий в соц.сети - получите его по API. Нужно написать новую статью по программированию - получите ее по API. Хотите вкусно покушать - сходите за едой, а статью пускай за вас напишет API!{% endif %}</p>
                         </div>
                     </div>
                 </div>

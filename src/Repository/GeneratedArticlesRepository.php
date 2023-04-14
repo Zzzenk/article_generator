@@ -41,6 +41,9 @@ class GeneratedArticlesRepository extends ServiceEntityRepository
 
     public function addArticle($user, $title, $article, $template, $imageFileName, $keywords)
     {
+        $template['images'] = null;
+        $template = implode(',', $template);
+
         $sql = 'INSERT INTO generated_articles (user_id, created_at, title, article, template, keywords)
         VALUES (:user, :created_at, :title, :article, :template, :keywords)';
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);

@@ -7,12 +7,9 @@ use App\Service\ArticleGeneratorService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class MainController extends AbstractController
 {
-
-
     private UnregisteredUsersRepository $unregisteredUsersRepository;
 
     public function __construct(UnregisteredUsersRepository $unregisteredUsersRepository)
@@ -40,14 +37,14 @@ class MainController extends AbstractController
             $requestArray = [
                 'theme' => $request->request->get('theme'),
                 'title' => $request->request->get('title'),
-                'promotedWord1' => $request->request->get('promotedWord1'),
+                'word1' => $request->request->get('word1'),
             ];
 
             if (!$this->isGranted('IS_AUTHENTICATED_FULLY') && $this->unregisteredUsersRepository->checkIP('192.168.1.3') === true) {
-                $article = $articleGeneratorService->generateArticle($requestArray, null, false);
+                $article = $articleGeneratorService->generateArticle(null, $requestArray, null, false);
                 $this->unregisteredUsersRepository->addIP($request->getClientIp());
             } elseif ($this->isGranted('IS_AUTHENTICATED_FULLY')) {
-                $article = $articleGeneratorService->generateArticle($requestArray, null, false);
+                $article = $articleGeneratorService->generateArticle(null, $requestArray, null, false);
             } else {
                 $disabled = 'disabled';
             }
@@ -55,7 +52,7 @@ class MainController extends AbstractController
 
         return $this->render('try.html.twig', [
             'title' => $requestArray['title'] ?? null,
-            'paragraph' => $article['article'] ?? null,
+            'article' => $article['article'] ?? null,
             'disabled' => $disabled ?? null,
         ]);
     }

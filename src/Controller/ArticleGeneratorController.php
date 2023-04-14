@@ -4,7 +4,6 @@ namespace App\Controller;
 
 
 use App\Form\ArticleCreateType;
-use App\Repository\ArticleContentRepository;
 use App\Repository\GeneratedArticlesRepository;
 use App\Repository\UserRepository;
 use App\Service\ArticleGeneratorService;
@@ -18,21 +17,17 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class ArticleGeneratorController extends AbstractController
 {
-
-    private ArticleContentRepository $articleContentRepository;
     private ArticleGeneratorService $articleGeneratorService;
     private UserRepository $userRepository;
     private Security $security;
     private GeneratedArticlesRepository $generatedArticlesRepository;
 
-    public function __construct(ArticleContentRepository $articleContentRepository,
-                                ArticleGeneratorService $articleGeneratorService,
+    public function __construct(ArticleGeneratorService $articleGeneratorService,
                                 UserRepository $userRepository,
                                 Security $security,
                                 GeneratedArticlesRepository $generatedArticlesRepository,
                                 private $targetDirectory)
     {
-        $this->articleContentRepository = $articleContentRepository;
         $this->articleGeneratorService = $articleGeneratorService;
         $this->userRepository = $userRepository;
         $this->security = $security;

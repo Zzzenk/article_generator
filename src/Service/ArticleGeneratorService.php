@@ -7,22 +7,11 @@ use App\Entity\Module;
 use App\Repository\ArticleContentRepository;
 use App\Repository\GeneratedArticlesRepository;
 use App\Repository\ModuleRepository;
-use App\Repository\UserRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[AsController]
 class ArticleGeneratorService
 {
-    private static $article = 'Вот уже больше пятнадцати лет у фанатов сериала Half-Life душа болит из-за так и не вышедшей Half-Life 2: Episode 3. Многие умельцы пообещали сделать заключительный эпизод боевика самостоятельно на базе сценария Марка Лэйдлоу — и совсем скоро один такой проект увидит свет дня.
-
-Моддер valina35 анонсировал дату релиза Episode 3: The Return, своей вариации на тему затерянного в офисах Valve третьего эпизода Half-Life 2. Итак, премьера короткометражного экшена назначена на 10 апреля.
-
-Напомним, что сейчас Valve помаленьку возвращается в строй. В 2020-м году она выпустила VR-приключение Half-Life 2: Alyx, а летом она перенесёт Counter-Strike: Global Offensive на рельсы движка Source 2.';
     private ArticleContentRepository $articleContentRepository;
     private ModuleRepository $moduleRepository;
     private GeneratedArticlesRepository $generatedArticlesRepository;
@@ -41,14 +30,14 @@ class ArticleGeneratorService
         if ($requestArray != null) {
             $theme = $requestArray['theme'];
             $title = $requestArray['title'];
-            $sizeFromField = $requestArray['sizeFromField'] ?? null;
-            $sizeToField = $requestArray['sizeToField'] ?? null;
-            $promotedWord1 = $requestArray['promotedWord1'] ?? null;
-            $promotedWord1Count = $requestArray['promotedWord1Count'] ?? 1;
-            $promotedWord2 = $requestArray['promotedWord2'] ?? null;
-            $promotedWord2Count = $requestArray['promotedWord2Count'] ?? null;
+            $sizeFrom = $requestArray['sizeFrom'] ?? null;
+            $sizeTo = $requestArray['sizeTo'] ?? null;
+            $word1 = $requestArray['word1'] ?? null;
+            $word1Count = $requestArray['word1Count'] ?? 1;
+            $word2 = $requestArray['word2'] ?? null;
+            $word2Count = $requestArray['word2Count'] ?? null;
 
-            $template = implode(PHP_EOL . PHP_EOL, $this->templateSelect($user, $sizeFromField, $sizeToField, $imageFileName));
+            $article = implode(PHP_EOL . PHP_EOL, $this->templateSelect($user, $sizeFrom, $sizeTo, $imageFileName));
 
             $keywords = [
                 $requestArray['keyword0'] ?? null,
@@ -65,78 +54,98 @@ class ArticleGeneratorService
 
             /** @var ArticleContent|null $allArticles */
             if ($theme != null) {
-                $allArticles = $this->articleContentRepository->findBy(['code' => $this->articleContentRepository->findOneBy(['theme' => $theme])->getCode()]);
+                $allArticles = $this->articleContentRepository->findBy(['code' => $theme]);
             } else {
                 $allArticles = $this->articleContentRepository->findAll();
             }
             shuffle($allArticles);
 
             foreach ($allArticles as $parapraph) {
-                if (str_contains($template, '{{ paragraph }}') === false && str_contains($template, '{{ paragraphs }}') === false) {
+                if (str_contains($article, '{{ paragraph }}') === false && str_contains($article, '{{ paragraphs }}') === false) {
                     break;
                 }
 
                 $parapraph = $parapraph->getBody();
 
-                if ($promotedWord1) {
+                if ($word1) {
                     $parapraph = explode(' ', $parapraph);
-                    $word1 = "<b>" . $promotedWord1 . "</b>";
-                    for ($i = 1; $i <= $promotedWord1Count; $i++) {
+                    $word1 = "<b>" . $word1 . "</b>";
+                    for ($i = 1; $i <= $word1Count; $i++) {
                         array_splice($parapraph, rand(1, count($parapraph)-1), 0, $word1);
                     }
                     $parapraph = implode(' ', $parapraph);
                 }
-                if ($promotedWord2) {
+                if ($word2) {
                     $parapraph = explode(' ', $parapraph);
-                    $word2 = "<b>" . $promotedWord2 . "</b>";
-                    for ($i = 1; $i <= $promotedWord2Count; $i++) {
+                    $word2 = "<b>" . $word2 . "</b>";
+                    for ($i = 1; $i <= $word2Count; $i++) {
                         array_splice($parapraph, rand(1, count($parapraph)-1), 0, $word2);
                     }
                     $parapraph = implode(' ', $parapraph);
                 }
 
-                $template = preg_replace('{{{ paragraph }}}', $parapraph, $template, 1);
-                $template = preg_replace('{{{ paragraphs }}}', $parapraph, $template, 1);
-                $template = preg_replace('{{{ title }}}', $title, $template, 1);
+                $article = preg_replace('{{{ paragraph }}}', $parapraph, $article, 1);
+                $article = preg_replace('{{{ paragraphs }}}', $parapraph, $article, 1);
+                $article = preg_replace('{{{ title }}}', $title, $article, 1);
             }
 
             if ($imageFileName) {
                 shuffle($imageFileName);
                 foreach ($imageFileName as $image) {
-                    if (str_contains($template, '{{ image }}') === false) {
+                    if (str_contains($article, '{{ image }}') === false) {
                         break;
                     }
-                    $template = preg_replace('{{{ image }}}', $image, $template, 1);
+                    $article = preg_replace('{{{ image }}}', $image, $article, 1);
                 }
             }
 
             if ($insert === true) {
-                $this->generatedArticlesRepository->addArticle($user, $title, $template, $template, $imageFileName, $keywords);
+                $this->generatedArticlesRepository->addArticle($user, $title, $article, $requestArray, $imageFileName, $keywords);
             }
 
             return [
                 'title' => $title,
-                'article' => $template,
+                'article' => $article,
                 'keywords' => explode(',', $keywords),
             ];
         }
     }
 
-    public function templateSelect($user, $sizeFromField, $sizeToField, $imageFileName)
+    public function templateSelect($user, $sizeFrom, $sizeTo, $imageFileName)
     {
+        if ($sizeTo == null) {
+            $sizeTo = $sizeFrom;
+        }
         /** @var Module|null $userModules */
 
         if ($user == null || $this->moduleRepository->getUserTemplates($user->getId()) == null) {
             $userModules = $this->moduleRepository->defaultTemplates($imageFileName);
-            for ($i = $sizeFromField; $i <= $sizeToField; $i++) {
+            shuffle($userModules);
+
+            for ($i = $sizeFrom; $i <= $sizeTo; $i++) {
                 $module = $userModules[rand(0, count($userModules) -1)];
                 $template[] = $module;
             }
 
+        } elseif ($imageFileName == null) {
+            $userModules = $this->moduleRepository->getUserTemplates($user->getId());
+            shuffle($userModules);
+
+            foreach ($userModules as $module) {
+                if (preg_match('{{{ image }}}', $module['code'])) {
+                    continue;
+                } else {
+                    for ($i = $sizeFrom; $i <= $sizeTo; $i++) {
+                        $template[$module['id']] = $module['code'];
+                    }
+                }
+            }
+
         } else {
             $userModules = $this->moduleRepository->getUserTemplates($user->getId());
+            shuffle($userModules);
 
-            for ($i = $sizeFromField; $i <= $sizeToField; $i++) {
+            for ($i = $sizeFrom; $i <= $sizeTo; $i++) {
                 $module = $userModules[rand(0, count($userModules) -1)];
                 $template[$module['id']] = $module['code'];
             }
@@ -145,15 +154,5 @@ class ArticleGeneratorService
         return $template;
     }
 
-
-    public function prepareArticleForApi($requestArray)
-    {
-        $title = array('{{ title }}');
-        $paragraphs = array('{{ paragraph|raw }}', '{{ paragraphs|raw }}');
-        $requestArray['article'] = str_replace($title, $requestArray['title'], $requestArray['article']);
-        $requestArray['article'] = str_replace($paragraphs, $requestArray['article'], $requestArray['article']);
-
-        return $requestArray['article'];
-    }
-
 }
+

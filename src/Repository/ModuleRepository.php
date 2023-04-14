@@ -69,15 +69,6 @@ class ModuleRepository extends ServiceEntityRepository
         return $stmt->executeQuery()->fetchAllAssociative();
     }
 
-    public function getArticleTemplate($id)
-    {
-        $sql = 'SELECT * FROM module
-        WHERE id = :id';
-        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
-        $stmt->bindValue('id', $id);
-        return $stmt->executeQuery()->fetchAllAssociative();
-    }
-
     public function defaultTemplates($imageFileName) : array
     {
         if ($imageFileName) {

@@ -34,10 +34,9 @@ class DashboardController extends AbstractController
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function dashboard()
     {
-        $user = $this->security->getUser();;
+        $user = $this->security->getUser();
+        $allArticles = $this->generatedArticlesRepository->findBy(['user' => $user->getId()]);
         $articlesThisMonth = $this->generatedArticlesRepository->lastCreatedArticles($user);
-        $latestArticle = end($articlesThisMonth);
-        $totalArticles = count($this->generatedArticlesRepository->findBy(['user' => $user->getId()]));
 
         if ($user->getSubscriptionExpiresAt() == null || $user->getSubscriptionExpiresAt()->format('Y.m.d H:i:s') < (new \DateTime('3 days'))) {
             $interval = '';
@@ -50,8 +49,8 @@ class DashboardController extends AbstractController
             'subscription' => $this->userRepository->checkSubscription(null),
             'expiresIn' => $interval,
             'articlesThisMonth' => count($articlesThisMonth),
-            'totalArticles' => $totalArticles,
-            'latestArticle' => $latestArticle,
+            'totalArticles' => count($allArticles),
+            'latestArticle' => end($allArticles),
         ]);
     }
 
@@ -103,9 +102,7 @@ class DashboardController extends AbstractController
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function history(PaginatorInterface $paginator, Request $request)
     {
-
-        $user_id = $this->security->getUser()->getId();
-        $generatedArticles = $this->generatedArticlesRepository->findBy(['user' => $user_id]);
+        $generatedArticles = $this->generatedArticlesRepository->findBy(['user' => $this->security->getUser()->getId()]);
 
         $pagination = $paginator->paginate(
             $generatedArticles, /* query NOT result */
@@ -128,21 +125,10 @@ class DashboardController extends AbstractController
         $article_id = $request->attributes->get('id');
         $generatedArticle = $this->generatedArticlesRepository->findOneBy(['id' => $article_id]);
 
-        if ($generatedArticle->getArticleImages()->getValues() != null) {
-            $images = $generatedArticle->getArticleImages()->getValues()[0]->getImageLink();
-        } else {
-            $images = null;
-        }
-
-        for ($i = 1; $i <= rand(2, 3); $i++) {
-            $paragraphs[] = $generatedArticle->getArticle() . PHP_EOL . PHP_EOL;
-        }
-        $paragraphs = implode(' ', $paragraphs);
-
         return $this->render('dashboard/dashboard_article_detail.html.twig', [
             'menuActive' => 'article_detail',
             'keyword' => explode(',', $generatedArticle->getKeywords()),
-            'article' => $generatedArticle->getTemplate(),
+            'article' => $generatedArticle->getArticle(),
             ]);
     }
 }
