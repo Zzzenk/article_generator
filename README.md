@@ -1,10 +1,11 @@
-[![PHP](https://img.shields.io/badge/PHP-8.2.4-brightgreen)](https://www.php.net/archive/2023.php#2023-03-16-2) [![Symfony](https://img.shields.io/badge/Symfony-6.2.8-brightgreen)](https://symfony.com/blog/symfony-6-2-8-released)
+[![PHP](https://img.shields.io/badge/PHP-8.2.4-brightgreen)](https://www.php.net/archive/2023.php#2023-03-16-2)
+[![Symfony](https://img.shields.io/badge/Symfony-6.2.8-brightgreen)](https://symfony.com/blog/symfony-6-2-8-released)
 
 
 
 ![Logo](https://raw.githubusercontent.com/Zzzenk/article_generator/main/public/img/logo_with_title.png)
 
-> Diploma work on the course "PHP-framework Symfony" from [Skillbox](https://skillbox.ru/course/symfony/)
+> Graduation work for [Skillbox](https://skillbox.ru/course/symfony/) (course PHP-framework Symfony)
 
 *Create a unique article perfect for your business, website or project in a couple of clicks!*
 

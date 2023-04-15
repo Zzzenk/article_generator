@@ -1,6 +1,8 @@
 .DS_Store
+.env.local
 /.idea/
 /node_modules
+/symfony-diploma-layout
 
 ###> symfony/framework-bundle ###
 /.env.local

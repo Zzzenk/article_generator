@@ -74,7 +74,7 @@
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">{% if latestArticle %}{{ latestArticle.title }}{% endif %}</h5>
-                                    <p class="card-text">{% if latestArticle %}{{ latestArticle.article|u.truncate(200, '...') }}{% else %}Нет сгенерированых статей{% endif %}</p>
+                                    <p class="card-text">{% if latestArticle %}{{ latestArticle.article|u.truncate(200, '...')|striptags }}{% else %}Нет сгенерированых статей{% endif %}</p>
                                     {% if latestArticle %}<a href="{{ path('app_dashboard_article_detail', { id: latestArticle.id }) }}" class="btn btn-primary">Перейти</a>{% endif %}
                                 </div>
                             </div>

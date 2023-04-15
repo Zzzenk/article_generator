@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% block title %}Авторизация. {{ parent() }}{% endblock %}
 
 {% block body %}
 <body class="signin-body">
@@ -7,6 +8,14 @@
             <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
                 <div class="card card-signin my-5">
                     <div class="card-body">
+                        {% for flash_error in app.flashes('verify_email') %}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{ flash_error }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
                         <h5 class="card-title text-center">Авторизация</h5>
 
                         {% if error %}
@@ -44,5 +53,4 @@
 </body>
 {% endblock %}
 
-{% block title %}Авторизация. {{ parent() }}{% endblock %}
 {% block footer %}{% endblock %}

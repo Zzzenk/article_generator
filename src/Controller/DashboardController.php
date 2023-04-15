@@ -122,13 +122,15 @@ class DashboardController extends AbstractController
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function article_detail(Request $request)
     {
-        $article_id = $request->attributes->get('id');
-        $generatedArticle = $this->generatedArticlesRepository->findOneBy(['id' => $article_id]);
+        $generatedArticle = $this->generatedArticlesRepository->findOneBy(['id' => $request->get('id')]);
+        $repeatParams = explode(',', implode(' ', $this->generatedArticlesRepository->getArticleTemplate($request->get('id'))[0]));
+        $repeatParams = str_replace('_', '=',implode('&', $repeatParams));
 
         return $this->render('dashboard/dashboard_article_detail.html.twig', [
             'menuActive' => 'article_detail',
             'keyword' => explode(',', $generatedArticle->getKeywords()),
             'article' => $generatedArticle->getArticle(),
+            'repeatParams' => $repeatParams,
             ]);
     }
 }

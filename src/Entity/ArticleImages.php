@@ -18,7 +18,7 @@ class ArticleImages
 
     #[ORM\ManyToOne(inversedBy: 'articleImages')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?GeneratedArticles $articleId = null;
+    private ?GeneratedArticles $article = null;
 
     public function getId(): ?int
     {
@@ -37,14 +37,14 @@ class ArticleImages
         return $this;
     }
 
-    public function getArticleId(): ?GeneratedArticles
+    public function getArticle(): ?GeneratedArticles
     {
-        return $this->articleId;
+        return $this->article;
     }
 
-    public function setArticleId(?GeneratedArticles $articleId): self
+    public function setArticle(?GeneratedArticles $article): self
     {
-        $this->articleId = $articleId;
+        $this->article = $article;
 
         return $this;
     }

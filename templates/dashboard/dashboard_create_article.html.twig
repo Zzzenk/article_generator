@@ -39,7 +39,7 @@
                                 'attr': {'class': 'form-control',
                                     'autofocus': 'autofocus',
                                     'placeholder': 'Заголовок статьи',
-                                    'value': articleCreateForm.vars.value.title ?? null }}
+                                    'value': articleCreateForm.vars.value.title ?? app.request.query.get('title') }}
                             ) }}
                             {{ form_label(articleCreateForm.title) }}
                         </div>
@@ -51,7 +51,7 @@
                                         'attr': {'class': 'form-control',
                                             'autofocus': 'autofocus',
                                             'placeholder': 'Ключевое слово',
-                                            'value': articleCreateForm.vars.value.keyword0 ?? null }}
+                                            'value': articleCreateForm.vars.value.keyword0 ?? app.request.query.get('keyword0') }}
                                     ) }}
                                     {{ form_label(articleCreateForm.keyword0) }}
                                 </div>
@@ -60,7 +60,7 @@
                                             'attr': {'class': 'form-control',
                                                 'autofocus': 'autofocus',
                                                 'placeholder': 'Родительный падеж',
-                                                'value': articleCreateForm.vars.value.keyword1 ?? null }}
+                                                'value': articleCreateForm.vars.value.keyword1 ?? app.request.query.get('keyword1') }}
                                         ) }}
                                         {{ form_label(articleCreateForm.keyword1) }}
                                     </div>
@@ -69,7 +69,7 @@
                                             'attr': {'class': 'form-control',
                                                 'autofocus': 'autofocus',
                                                 'placeholder': 'Дательный падеж',
-                                                'value': articleCreateForm.vars.value.keyword2 ?? null }}
+                                                'value': articleCreateForm.vars.value.keyword2 ?? app.request.query.get('keyword2') }}
                                         ) }}
                                         {{ form_label(articleCreateForm.keyword2) }}
                                     </div>
@@ -78,7 +78,7 @@
                                             'attr': {'class': 'form-control',
                                                 'autofocus': 'autofocus',
                                                 'placeholder': 'Винительный падеж',
-                                                'value': articleCreateForm.vars.value.keyword3 ?? null }}
+                                                'value': articleCreateForm.vars.value.keyword3 ?? app.request.query.get('keyword3') }}
                                         ) }}
                                         {{ form_label(articleCreateForm.keyword3) }}
                                     </div>
@@ -87,7 +87,7 @@
                                             'attr': {'class': 'form-control',
                                                 'autofocus': 'autofocus',
                                                 'placeholder': 'Творительный падеж',
-                                                'value': articleCreateForm.vars.value.keyword4 ?? null }}
+                                                'value': articleCreateForm.vars.value.keyword4 ?? app.request.query.get('keyword4') }}
                                         ) }}
                                         {{ form_label(articleCreateForm.keyword4) }}
                                     </div>
@@ -96,7 +96,7 @@
                                             'attr': {'class': 'form-control',
                                                 'autofocus': 'autofocus',
                                                 'placeholder': 'Предложный падеж',
-                                                'value': articleCreateForm.vars.value.keyword5 ?? null }}
+                                                'value': articleCreateForm.vars.value.keyword5 ?? app.request.query.get('keyword5') }}
                                         ) }}
                                         {{ form_label(articleCreateForm.keyword5) }}
                                     </div>
@@ -105,7 +105,7 @@
                                             'attr': {'class': 'form-control',
                                                 'autofocus': 'autofocus',
                                                 'placeholder': 'Множественное число',
-                                                'value': articleCreateForm.vars.value.keyword6 ?? null }}
+                                                'value': articleCreateForm.vars.value.keyword6 ?? app.request.query.get('keyword6') }}
                                         ) }}
                                         {{ form_label(articleCreateForm.keyword6) }}
                                     </div>
@@ -119,7 +119,7 @@
                                         'attr': {'class': 'form-control',
                                             'autofocus': 'autofocus',
                                             'placeholder': 'Размер статьи от',
-                                            'value': articleCreateForm.vars.value.sizeFrom ?? null }}
+                                            'value': articleCreateForm.vars.value.sizeFrom ?? app.request.query.get('sizeFrom') }}
                                     ) }}
                                     {{ form_label(articleCreateForm.sizeFrom) }}
                                 </div>
@@ -130,7 +130,7 @@
                                         'attr': {'class': 'form-control',
                                             'autofocus': 'autofocus',
                                             'placeholder': 'до',
-                                            'value': articleCreateForm.vars.value.sizeTo ?? null }}
+                                            'value': articleCreateForm.vars.value.sizeTo ?? app.request.query.get('sizeTo') }}
                                     ) }}
                                     {{ form_label(articleCreateForm.sizeTo) }}
                                 </div>
@@ -148,7 +148,7 @@
                                                 'attr': {'class': 'form-control',
                                                     'autofocus': 'autofocus',
                                                     'placeholder': 'Продвигаемое слово 1',
-                                                    'value': articleCreateForm.vars.value.word1 ?? null }}
+                                                    'value': articleCreateForm.vars.value.word1 ?? app.request.query.get('word1') }}
                                             ) }}
                                             {{ form_label(articleCreateForm.word1) }}
                                         </div>
@@ -159,7 +159,7 @@
                                                 'attr': {'class': 'form-control',
                                                     'autofocus': 'autofocus',
                                                     'placeholder': 'кол-во',
-                                                    'value': articleCreateForm.vars.value.word1Count ?? null }}
+                                                    'value': articleCreateForm.vars.value.word1Count ?? app.request.query.get('word1Count') }}
                                             ) }}
                                             {{ form_label(articleCreateForm.word1Count) }}
                                         </div>
@@ -172,7 +172,7 @@
                                                 'attr': {'class': 'form-control',
                                                     'autofocus': 'autofocus',
                                                     'placeholder': 'Продвигаемое слово 2',
-                                                    'value': articleCreateForm.vars.value.word2 ?? null }}
+                                                    'value': articleCreateForm.vars.value.word2 ?? app.request.query.get('word2') }}
                                             ) }}
                                             {{ form_label(articleCreateForm.word2) }}
                                         </div>
@@ -183,7 +183,7 @@
                                                 'attr': {'class': 'form-control',
                                                     'autofocus': 'autofocus',
                                                     'placeholder': 'кол-во',
-                                                    'value': articleCreateForm.vars.value.word2Count ?? null }}
+                                                    'value': articleCreateForm.vars.value.word2Count ?? app.request.query.get('word2Count') }}
                                             ) }}
                                             {{ form_label(articleCreateForm.word2Count) }}
                                         </div>
@@ -217,7 +217,7 @@
                                         'attr': {'class': 'form-control',
                                             'autofocus': 'autofocus',
                                             'placeholder': 'Ссылки через запятую',
-                                            'value': articleCreateForm.vars.value.imageLink ?? null }}
+                                            'value': articleCreateForm.vars.value.imageLink ?? app.request.query.get('imageLink') }}
                                     ) }}
                                     {{ form_label(articleCreateForm.imageLink) }}
                                 </div>

@@ -103,23 +103,9 @@ class ArticleGeneratorController extends AbstractController
                 IMAGETYPE_GIF => "image/gif",
                 IMAGETYPE_JPEG => "image/jpg",
                 IMAGETYPE_PNG => "image/png",
-                IMAGETYPE_SWF => "image/swf",
-                IMAGETYPE_PSD => "image/psd",
-                IMAGETYPE_BMP => "image/bmp",
-                IMAGETYPE_TIFF_II => "image/tiff",
-                IMAGETYPE_TIFF_MM => "image/tiff",
-                IMAGETYPE_JPC => "image/jpc",
-                IMAGETYPE_JP2 => "image/jp2",
-                IMAGETYPE_JPX => "image/jpx",
-                IMAGETYPE_JB2 => "image/jb2",
-                IMAGETYPE_SWC => "image/swc",
-                IMAGETYPE_IFF => "image/iff",
-                IMAGETYPE_WBMP => "image/wbmp",
-                IMAGETYPE_XBM => "image/xbm",
-                IMAGETYPE_ICO => "image/ico");
+                IMAGETYPE_WEBP => "image/webp");
 
-            if (($image_type = exif_imagetype($image))
-                && (array_key_exists($image_type ,$mimes)))
+            if (($image_type = exif_imagetype($image)) && (array_key_exists($image_type ,$mimes)))
             {
                 return $mimes[$image_type];
             }

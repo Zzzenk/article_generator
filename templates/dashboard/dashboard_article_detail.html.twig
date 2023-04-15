@@ -9,7 +9,6 @@
             <div class="col-xl-6">
 
                 {% include template_from_string(article) %}
-{#                {{ article|raw }}#}
 
             </div>
 
@@ -21,7 +20,7 @@
 
             <div class="col-xl-6">
 
-                <a href="{{ path('app_dashboard_create_article') }}" class="btn btn-primary">Создать новую статью</a>
+                <a href="{{ path('app_dashboard_create_article') }}?{{ repeatParams }}" class="btn btn-primary">попробовать еще раз</a>
             </div>
 
         </div>

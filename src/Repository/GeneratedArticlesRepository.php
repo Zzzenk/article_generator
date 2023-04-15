@@ -42,7 +42,10 @@ class GeneratedArticlesRepository extends ServiceEntityRepository
     public function addArticle($user, $title, $article, $template, $imageFileName, $keywords)
     {
         $template['images'] = null;
-        $template = implode(',', $template);
+        foreach ($template as $key => $value) {
+            $templateArray[] = $key . '_' . $value;
+        }
+        $template = implode(',', $templateArray);
 
         $sql = 'INSERT INTO generated_articles (user_id, created_at, title, article, template, keywords)
         VALUES (:user, :created_at, :title, :article, :template, :keywords)';
@@ -75,7 +78,7 @@ class GeneratedArticlesRepository extends ServiceEntityRepository
 
     public function addArticleImageSql($lastId, $image)
     {
-        $sql = 'INSERT INTO article_images (article_id_id, image_link)
+        $sql = 'INSERT INTO article_images (article_id, image_link)
                 VALUES (:article_id, :image_link)';
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $stmt->bindValue('article_id', $lastId);
@@ -111,6 +114,16 @@ class GeneratedArticlesRepository extends ServiceEntityRepository
         } else {
             return true;
         }
+    }
+
+    public function getArticleTemplate($id)
+    {
+        $sql = 'SELECT template FROM generated_articles
+        WHERE id = :id';
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt->bindValue('id', $id);
+
+        return $stmt->executeQuery()->fetchAllAssociative();
     }
 
 }

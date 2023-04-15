@@ -116,8 +116,8 @@ class ArticleGeneratorService
         if ($sizeTo == null) {
             $sizeTo = $sizeFrom;
         }
-        /** @var Module|null $userModules */
 
+        /** @var Module|null $userModules */
         if ($user == null || $this->moduleRepository->getUserTemplates($user->getId()) == null) {
             $userModules = $this->moduleRepository->defaultTemplates($imageFileName);
             shuffle($userModules);

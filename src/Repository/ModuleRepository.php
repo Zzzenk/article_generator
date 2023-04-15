@@ -97,7 +97,21 @@ class ModuleRepository extends ServiceEntityRepository
         <p>{{ paragraph }}</p>
     </div>
 </div>',
-                ];
+                    '<h3>{{ title }}</h3>
+<p>{{ paragraph }}</p>',
+                '{{ paragraphs }}',
+                    '<h1>{{ title }}</h1>
+<p>{{ paragraph }}</p>',
+                    '<div class="row">
+    <div class="col-sm-6">
+        {{ paragraphs }}      
+    </div>
+    <div class="col-sm-6">
+        {{ paragraphs }}
+    </div>
+</div>',
+
+            ];
         } else {
             return [
                     '<h3>{{ title }}</h3>

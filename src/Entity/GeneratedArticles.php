@@ -32,7 +32,7 @@ class GeneratedArticles
     #[ORM\Column(length: 20000)]
     private ?string $template = null;
 
-    #[ORM\OneToMany(mappedBy: 'articleId', targetEntity: ArticleImages::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'article', targetEntity: ArticleImages::class, orphanRemoval: true)]
     private Collection $articleImages;
 
     #[ORM\Column(length: 1000, nullable: true)]
