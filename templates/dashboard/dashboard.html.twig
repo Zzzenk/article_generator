@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Личный кабинет. {{ parent() }}{% endblock %}
+
+{% block navbar %}
+<div class="d-flex" id="wrapper">
+
+    <div class="bg-light border-right" id="sidebar-wrapper">
+        <div class="sidebar-heading"><a href="{{ path('app_homepage') }}"><img src="{{ asset('img/logo_with_title.png') }}" width="200"></a></div>
+        <div class="list-group list-group-flush">
+            <a href="{{ path('app_dashboard') }}"                class="list-group-item list-group-item-action {% if menuActive == 'dashboard' %}active{% else %}bg-light{% endif %}">Рабочий стол</a>
+            <a href="{{ path('app_dashboard_profile') }}"        class="list-group-item list-group-item-action {% if menuActive == 'profile' %}active{% else %}bg-light{% endif %}">Профиль</a>
+            <a href="{{ path('app_dashboard_subscription') }}"   class="list-group-item list-group-item-action {% if menuActive == 'subscription' %}active{% else %}bg-light{% endif %}">Подписка</a>
+            <a href="{{ path('app_dashboard_create_article') }}" class="list-group-item list-group-item-action {% if menuActive == 'create_article' %}active{% else %}bg-light{% endif %}">Создать статью</a>
+            <a href="{{ path('app_dashboard_history') }}"        class="list-group-item list-group-item-action {% if menuActive == 'history' %}active{% else %}bg-light{% endif %}">История статей</a>
+            <a href="{{ path('app_dashboard_templates') }}"      class="list-group-item list-group-item-action {% if menuActive == 'modules' %}active{% else %}bg-light{% endif %}">Шаблоны генератора</a>
+        </div>
+    </div>
+
+    <div id="page-content-wrapper">
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <button class="btn btn-primary" id="menu-toggle"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{ path('app_logout') }}">Выйти</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+{% endblock %}
+
+{% block body %}
+            <div class="container-fluid">
+                <h1 class="mt-4">Рабочий стол</h1>
+                <div class="row">
+                    <div class="col-xl-8 border-right">
+                        {% if expiresIn != null %}
+                        <div class="alert alert-warning" role="alert">
+                            Подписка истекает через {{ expiresIn }}
+                        </div>
+                        {% endif %}
+                        <div class="card-columns dashboard">
+                            <div class="card">
+                                <div class="card-header">
+                                    Всего создано статей
+                                </div>
+                                <div class="card-body">
+                                    <h1 class="card-title">{{ totalArticles }}</h1>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    Статей создано в этом месяце
+                                </div>
+                                <div class="card-body">
+                                    <h1 class="card-title">{{ articlesThisMonth }}</h1>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    Ваш уровень подписки
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="card-title">{{ subscription }}</h4>
+                                    <a href="{{ path('app_dashboard_subscription') }}" class="btn btn-primary">{% if subscription != 'PRO' %}Улучшить{% else %}Тарифы{% endif %}</a>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    Последняя статья
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{% if latestArticle %}{{ latestArticle.title }}{% endif %}</h5>
+                                    <p class="card-text">{% if latestArticle %}{{ latestArticle.article|u.truncate(200, '...')|striptags }}{% else %}Нет сгенерированых статей{% endif %}</p>
+                                    {% if latestArticle %}<a href="{{ path('app_dashboard_article_detail', { id: latestArticle.id }) }}" class="btn btn-primary">Перейти</a>{% endif %}
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    Новая статья
+                                </div>
+                                <div class="card-body">
+                                    <a href="{{ path('app_dashboard_create_article') }}" class="btn btn-primary">Создать</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+    <script src="{{ asset('js/dashboard.js') }}"></script>
+{% endblock %}

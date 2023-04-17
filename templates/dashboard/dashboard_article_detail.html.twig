@@ -1,0 +1,18 @@
+{% extends 'dashboard/dashboard.html.twig' %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xl-6">
+                {% include template_from_string(article) %}
+            </div>
+        </div>
+        <hr>
+        <div class="row my-4">
+            <div class="col-xl-6">
+                <a href="{{ path('app_dashboard_create_article') }}?{{ repeatParams }}" class="btn btn-primary">попробовать еще раз</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

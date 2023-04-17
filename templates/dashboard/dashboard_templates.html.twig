@@ -1,0 +1,107 @@
+{% extends 'dashboard/dashboard.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid">
+        <section>
+            {% if disabled %}
+                <div class="alert alert-warning" role="alert">
+                    Для того, чтобы использовать шаблоны, оформите <a href="{{ path('app_dashboard_subscription') }}">подписку
+                        PRO</a>
+                </div>
+            {% endif %}
+            <h1 class="mt-4">Ваши шаблоны</h1>
+
+            {% for success in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ success }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+            <table class="table table-hover table-bordered">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Код</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for module in pagination %}
+                    <tr>
+                        <th scope="row">{{ module.id }}</th>
+                        <td>{{ module.title }}</td>
+                        <td>
+<pre class="code">
+{{ module.code }}
+</pre>
+                        </td>
+                        <td><a href="{{ path('app_dashboard_template_delete', { id: module.id }) }}"
+                               class="text-danger"><i class="fas fa-trash"></i></a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="navigation">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        </section>
+
+        <hr>
+
+        <section class="py-4">
+
+            <h1 class="mt-4">Добавить шаблон</h1>
+
+            <div class="row">
+
+                <div class="col-xl-6">
+                    <form action="{{ path('app_dashboard_template_add') }}">
+                        <div class="form-group">
+                            <label for="title">Название шаблона</label>
+                            <input type="text" id="title" name="title" class="form-control"
+                                   placeholder="Название шаблона" required autofocus {{ disabled }}>
+                        </div>
+                        <div class="form-group">
+                            <label for="code">Код шаблона</label>
+                            <textarea id="code" name="code" class="form-control" placeholder="Код шаблона"
+                                      required {{ disabled }}></textarea>
+                        </div>
+
+                        <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" {{ disabled }}>
+                            Добавить
+                        </button>
+                    </form>
+                </div>
+                <div class="col-xl-6">
+                    <p class="pb-2">
+                        Шаблон – HTML-код для генерации статей.
+                        Для шаблона доступны несколько параметров:
+                    </p>
+                    <details>
+                        <summary>Показать параметры</summary>
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr>
+                                <th scope="row">{% verbatim %}{{ title }}{% endverbatim %}</th>
+                                <td>Заголовок статьи</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">{% verbatim %}{{ keyword }}{% endverbatim %}</th>
+                                <td>Ключевые слова</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">{% verbatim %}{{ images }}{% endverbatim %}</th>
+                                <td>Изображения для статьи</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </details>
+                </div>
+            </div>
+        </section>
+    </div>
+    </div>
+{% endblock %}

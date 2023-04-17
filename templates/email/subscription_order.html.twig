@@ -1,0 +1,15 @@
+{% extends 'email/email_template.html.twig' %}
+{% block content %}
+<p><b>{{ email.toName }}</b>, поздравляем с фоформлением подписки!</p>
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+    <tbody>
+    <tr>
+        <td align="left">
+            <p>
+                Ваша подписка <b>{{ subscription }}</b> действительна до {{ expiresAt }}
+            </p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,325 @@
+{% extends 'dashboard/dashboard.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h1 class="mt-4">Создание статьи</h1>
+        <div class="row">
+            <div class="col-xl-6">
+                {% if check2hours == false and subscription != 'PRO' %}
+                    <div class="alert alert-danger" role="alert">
+                        Превышен лимит создания статей, чтобы снять лимит <a
+                                href="{{ path('app_dashboard_subscription') }}">улучшите подписку</a>
+                    </div>
+                {% endif %}
+                {% if subscription == 'FREE' %}
+                    <div class="alert alert-warning" role="alert">
+                        Для того, чтобы использовать все возможности генератора, <a
+                                href="{{ path('app_dashboard_subscription') }}">улучшите подписку</a>
+                    </div>
+                {% endif %}
+                {% if article != '' %}
+                <details>
+                    <summary>Развернуть форму</summary>
+                    {% endif %}
+
+                    {{ form_start(articleCreateForm, {
+                        'attr': {'class': 'form-signin'}}
+                    ) }}
+                    {{ form_row(articleCreateForm._token) }}
+
+                    <div class="form-group">
+                        {{ form_label(articleCreateForm.theme) }}
+                        {{ form_widget(articleCreateForm.theme, {
+                            'attr': {'class': 'form-control',
+                                'autofocus': 'autofocus',
+                                'placeholder': 'Тематика' }}
+                        ) }}
+                    </div>
+
+                    <div class="form-label-group">
+                        {{ form_widget(articleCreateForm.title, {
+                            'attr': {'class': 'form-control',
+                                'autofocus': 'autofocus',
+                                'placeholder': 'Заголовок статьи',
+                                'value': articleCreateForm.vars.value.title ?? app.request.query.get('title') }}
+                        ) }}
+                        {{ form_label(articleCreateForm.title) }}
+                    </div>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <p class="card-title">Ключевое слово</p>
+                            <div class="form-label-group">
+                                {{ form_widget(articleCreateForm.keyword0, {
+                                    'attr': {'class': 'form-control',
+                                        'autofocus': 'autofocus',
+                                        'placeholder': 'Ключевое слово',
+                                        'value': articleCreateForm.vars.value.keyword0 ?? app.request.query.get('keyword0') }}
+                                ) }}
+                                {{ form_label(articleCreateForm.keyword0) }}
+                            </div>
+                            <div class="form-label-group">
+                                {{ form_widget(articleCreateForm.keyword1, {
+                                    'attr': {'class': 'form-control',
+                                        'autofocus': 'autofocus',
+                                        'placeholder': 'Родительный падеж',
+                                        'value': articleCreateForm.vars.value.keyword1 ?? app.request.query.get('keyword1') }}
+                                ) }}
+                                {{ form_label(articleCreateForm.keyword1) }}
+                            </div>
+                            <div class="form-label-group">
+                                {{ form_widget(articleCreateForm.keyword2, {
+                                    'attr': {'class': 'form-control',
+                                        'autofocus': 'autofocus',
+                                        'placeholder': 'Дательный падеж',
+                                        'value': articleCreateForm.vars.value.keyword2 ?? app.request.query.get('keyword2') }}
+                                ) }}
+                                {{ form_label(articleCreateForm.keyword2) }}
+                            </div>
+                            <div class="form-label-group">
+                                {{ form_widget(articleCreateForm.keyword3, {
+                                    'attr': {'class': 'form-control',
+                                        'autofocus': 'autofocus',
+                                        'placeholder': 'Винительный падеж',
+                                        'value': articleCreateForm.vars.value.keyword3 ?? app.request.query.get('keyword3') }}
+                                ) }}
+                                {{ form_label(articleCreateForm.keyword3) }}
+                            </div>
+                            <div class="form-label-group">
+                                {{ form_widget(articleCreateForm.keyword4, {
+                                    'attr': {'class': 'form-control',
+                                        'autofocus': 'autofocus',
+                                        'placeholder': 'Творительный падеж',
+                                        'value': articleCreateForm.vars.value.keyword4 ?? app.request.query.get('keyword4') }}
+                                ) }}
+                                {{ form_label(articleCreateForm.keyword4) }}
+                            </div>
+                            <div class="form-label-group">
+                                {{ form_widget(articleCreateForm.keyword5, {
+                                    'attr': {'class': 'form-control',
+                                        'autofocus': 'autofocus',
+                                        'placeholder': 'Предложный падеж',
+                                        'value': articleCreateForm.vars.value.keyword5 ?? app.request.query.get('keyword5') }}
+                                ) }}
+                                {{ form_label(articleCreateForm.keyword5) }}
+                            </div>
+                            <div class="form-label-group">
+                                {{ form_widget(articleCreateForm.keyword6, {
+                                    'attr': {'class': 'form-control',
+                                        'autofocus': 'autofocus',
+                                        'placeholder': 'Множественное число',
+                                        'value': articleCreateForm.vars.value.keyword6 ?? app.request.query.get('keyword6') }}
+                                ) }}
+                                {{ form_label(articleCreateForm.keyword6) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-label-group">
+                                {{ form_widget(articleCreateForm.sizeFrom, {
+                                    'attr': {'class': 'form-control',
+                                        'autofocus': 'autofocus',
+                                        'placeholder': 'Размер статьи от',
+                                        'value': articleCreateForm.vars.value.sizeFrom ?? app.request.query.get('sizeFrom') }}
+                                ) }}
+                                {{ form_label(articleCreateForm.sizeFrom) }}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-label-group">
+                                {{ form_widget(articleCreateForm.sizeTo, {
+                                    'attr': {'class': 'form-control',
+                                        'autofocus': 'autofocus',
+                                        'placeholder': 'до',
+                                        'value': articleCreateForm.vars.value.sizeTo ?? app.request.query.get('sizeTo') }}
+                                ) }}
+                                {{ form_label(articleCreateForm.sizeTo) }}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <p class="card-title">Продвигаемые слова</p>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-label-group">
+                                        {{ form_widget(articleCreateForm.word1, {
+                                            'attr': {'class': 'form-control',
+                                                'autofocus': 'autofocus',
+                                                'placeholder': 'Продвигаемое слово 1',
+                                                'value': articleCreateForm.vars.value.word1 ?? app.request.query.get('word1') }}
+                                        ) }}
+                                        {{ form_label(articleCreateForm.word1) }}
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-label-group">
+                                        {{ form_widget(articleCreateForm.word1Count, {
+                                            'attr': {'class': 'form-control',
+                                                'autofocus': 'autofocus',
+                                                'placeholder': 'кол-во',
+                                                'value': articleCreateForm.vars.value.word1Count ?? app.request.query.get('word1Count') }}
+                                        ) }}
+                                        {{ form_label(articleCreateForm.word1Count) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-label-group">
+                                        {{ form_widget(articleCreateForm.word2, {
+                                            'attr': {'class': 'form-control',
+                                                'autofocus': 'autofocus',
+                                                'placeholder': 'Продвигаемое слово 2',
+                                                'value': articleCreateForm.vars.value.word2 ?? app.request.query.get('word2') }}
+                                        ) }}
+                                        {{ form_label(articleCreateForm.word2) }}
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-label-group">
+                                        {{ form_widget(articleCreateForm.word2Count, {
+                                            'attr': {'class': 'form-control',
+                                                'autofocus': 'autofocus',
+                                                'placeholder': 'кол-во',
+                                                'value': articleCreateForm.vars.value.word2Count ?? app.request.query.get('word2Count') }}
+                                        ) }}
+                                        {{ form_label(articleCreateForm.word2Count) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p>Изображения</p>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                               aria-controls="home"
+                               aria-selected="true">Загрузить</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                               aria-controls="profile"
+                               aria-selected="false">Ссылка</a>
+                        </li>
+                    </ul>
+
+                    <br/>
+                    <div class="form-group">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                {{ form_widget(articleCreateForm.images) }}
+                                {{ form_label(articleCreateForm.images) }}
+                            </div>
+                            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                <div class="form-label-group">
+                                    {{ form_widget(articleCreateForm.imageLink, {
+                                        'attr': {'class': 'form-control',
+                                            'autofocus': 'autofocus',
+                                            'placeholder': 'Ссылки через запятую',
+                                            'value': articleCreateForm.vars.value.imageLink ?? app.request.query.get('imageLink') }}
+                                    ) }}
+                                    {{ form_label(articleCreateForm.imageLink) }}
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" {{ disabled }}>
+                        Создать
+                    </button>
+                    </form>
+                    {{ form_end(articleCreateForm) }}
+                    {% if article != '' %}
+                </details>
+                {% endif %}
+            </div>
+        </div>
+
+        <hr>
+
+        {% block generated_article %}
+            {% if article != '' %}
+                <h2 class="mt-4">Ваша статья</h2>
+                <hr>
+
+                {#        {{ article|raw }} #}
+                {% include template_from_string(article) %}
+
+            {% elseif article == '' %}
+                <div class="row">
+
+                    <div class="col-xl-6">
+
+                        <h1 class="mt-4" align="center"><i class="fas fa-exclamation-circle btn-outline-warning"></i>
+                            Демонстрационная статья</h1>
+
+                        <h3>Нейросеть научилась взламывать пароли с пугающей скоростью</h3>
+                        <div class="media">
+                            <img class="mr-3" src="{{ asset('img/example1.jpg') }}" width="250" alt="">
+                            <div class="media-body">
+                                <p>Фирма по кибербезопасности Home Security Heroes опубликовала исследование <b>ВАШЕ
+                                        СЛОВО</b>, в котором показала работу инструмента на основе искусственного
+                                    интеллекта PassGAN для проверки более 15 680 000 паролей. Они смогли подобрать 51%
+                                    распространённых паролей менее чем за минуту.</p>
+                                <p>PassGAN потребовалось менее часа, чтобы с помощью брутфорса взломать 65% паролей, а
+                                    71% был подобран менее чем за <b>ВАШЕ СЛОВО</b> день и 81% — менее чем за месяц.</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p>Исследователи составили таблицу, которая показывает, какие пароли являются самыми
+                                    сложными. <b>ВАШЕ СЛОВО</b> Если человек использует 12-значный пароль, состоящий из
+                                    прописных и строчных букв, инструменту может потребоваться 289 лет, чтобы взломать
+                                    его. При добавлении цифр этот срок увеличивается до 2000 лет, а символов — до 30 000
+                                    лет. </p>
+                            </div>
+                            <div class="col-sm-6">
+                                <p>В Home Security Heroes рекомендуют <b>ВАШЕ СЛОВО</b> использовать пароли, состоящие
+                                    не менее чем из 12 символов, и включающие не только цифры. Они встроили в свой сайт
+                                    инструмент, где можно написать случайный пароль, и ресурс сообщит, сколько времени
+                                    займёт его взлом. </p>
+                            </div>
+                        </div>
+
+                        <div class="media">
+                            <div class="media-body">
+                                <p>Ранее исследователи из Университета Глазго разработали систему ThermoSecure, которая
+                                    способна мгновенно угадывать пароль, анализируя тепловой отпечаток кончиков пальцев
+                                    на клавиатуре или экране смартфона. Для этого они обучили искусственный интеллект
+                                    <b>ВАШЕ СЛОВО</b> эффективно читать изображения и делать обоснованные предположения
+                                    о паролях из подсказок тепловых сигнатур с использованием вероятностной модели.
+                                    Оказалось, что ThermoSecure способна раскрыть 86% паролей, если тепловизионный
+                                    снимок был сделан в течение 20 секунд, 76%, если прошло 30 секунд и 62% спустя 60
+                                    секунд после ввода.</p>
+                            </div>
+                            <img class="ml-3" src="{{ asset('img/example2.jpg') }}" width="350" alt="">
+                        </div>
+
+                        <h3>Half-Life: Alyx стала полностью проходима без VR-шлема</h3>
+                        <p>Расширение Half-Life: Alyx NoVR теперь позволяет пройти <b>ВАШЕ СЛОВО</b> игру целиком без
+                            шлема виртуальной реальности. Авторы отмечают, что проект находится на стадии «раннего
+                            доступа», так что пока не лишён шероховатостей.</p>
+                        <p>Разработчикам удалось перенести управление всеми возможностями шутера для мышки и клавиатуры
+                            — включая гравиперчатки, улучшения оружия и всё прочее. В течение этого года команда
+                            планирует довести релиз до версии 1.0, доработав интерфейс, <b>ВАШЕ СЛОВО</b> анимации,
+                            взаимодействие с окружением и прочие детали.</p>
+                        <p>Скачать модификацию можно по <a
+                                    href="https://www.moddb.com/mods/half-life-alyx-novr/downloads">этой ссылке</a>. <b>ВАШЕ
+                                СЛОВО</b></p>
+                    </div>
+                </div>
+            {% endif %}
+
+        {% endblock %}
+
+    </div>
+</div>
+{% endblock %}
