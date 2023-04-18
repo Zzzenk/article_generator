@@ -16,6 +16,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class SubscriptionController extends AbstractController
 {
+    const EMAIL_FROM = 'Article Generator - генератор статей';
+
     #[Route('/dashboard/subscription', name: 'app_dashboard_subscription')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function subscription(UserRepository $userRepository, Security $security): Response
@@ -46,7 +48,7 @@ class SubscriptionController extends AbstractController
         $email = new TemplatedEmail();
         $email
             ->to(new Address($userEmail, $user->getFirstName()))
-            ->from(new Address($_ENV['NOREPLY_EMAIL'], 'Article Generator'))
+            ->from(new Address($_ENV['NOREPLY_EMAIL'], SubscriptionController::EMAIL_FROM))
             ->subject('Оформление подписки')
             ->htmlTemplate('email/subscription_order.html.twig')
             ->context([

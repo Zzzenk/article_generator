@@ -249,7 +249,6 @@
                 <h2 class="mt-4">Ваша статья</h2>
                 <hr>
 
-                {#        {{ article|raw }} #}
                 {% include template_from_string(article) %}
 
             {% elseif article == '' %}
@@ -311,9 +310,8 @@
                             — включая гравиперчатки, улучшения оружия и всё прочее. В течение этого года команда
                             планирует довести релиз до версии 1.0, доработав интерфейс, <b>ВАШЕ СЛОВО</b> анимации,
                             взаимодействие с окружением и прочие детали.</p>
-                        <p>Скачать модификацию можно по <a
-                                    href="https://www.moddb.com/mods/half-life-alyx-novr/downloads">этой ссылке</a>. <b>ВАШЕ
-                                СЛОВО</b></p>
+                        <p>Скачать модификацию можно по
+                            <a href="https://www.moddb.com/mods/half-life-alyx-novr/downloads">этой ссылке</a>. <b>ВАШЕ СЛОВО</b></p>
                     </div>
                 </div>
             {% endif %}

@@ -12,13 +12,13 @@ class Module
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id')]
+    #[ORM\Column(name: 'id', nullable: false)]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'title', length: 255)]
+    #[ORM\Column(name: 'title', length: 255, nullable: false)]
     private ?string $title = null;
 
-    #[ORM\Column(name: 'code', length: 10000)]
+    #[ORM\Column(name: 'code', length: 10000, nullable: false)]
     private ?string $code = null;
 
     #[ORM\ManyToOne(inversedBy: 'modules')]

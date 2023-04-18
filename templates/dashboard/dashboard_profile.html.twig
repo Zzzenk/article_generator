@@ -9,11 +9,10 @@
                 <div class="card my-4">
                     <div class="card-body">
                         <p><b>Ваш API токен:</b> <span id="apiToken">{{ apiToken }}</span>
-                            <button class="btn btn-primary btn-sm ml-2" onclick="copyContent()"><i
-                                        class="fa fa-clipboard" aria-hidden="true"></i></button>
+                            <button class="btn btn-primary btn-sm ml-2" onclick="copyContent()"><i class="fa fa-clipboard" aria-hidden="true"></i></button>
                         </p>
                         <form action="{{ path('app_dashboard_profile_update') }}">
-                            <button class="btn btn-outline-primary" name="newToken" value="newToken">Создать новый </button>
+                            <button class="btn btn-outline-primary" name="newToken" value="newToken">Создать новый</button>
                         </form>
                     </div>
                 </div>

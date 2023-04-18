@@ -10,16 +10,16 @@ class ArticleContent
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id')]
+    #[ORM\Column(name: 'id', nullable: false)]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'body', length: 10000)]
+    #[ORM\Column(name: 'body', length: 10000, nullable: false)]
     private ?string $body = null;
 
-    #[ORM\Column(name: 'code', length: 255)]
+    #[ORM\Column(name: 'code', length: 255, nullable: false)]
     private ?string $code = null;
 
-    #[ORM\Column(name: 'theme', length: 255)]
+    #[ORM\Column(name: 'theme', length: 255, nullable: false)]
     private ?string $theme = null;
 
     public function getId(): ?int

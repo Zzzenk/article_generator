@@ -13,23 +13,23 @@ class GeneratedArticles
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id')]
+    #[ORM\Column(name: 'id', nullable: false)]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'generatedArticles')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\Column(name: 'created_at', type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_MUTABLE, nullable: false)]
     private ?\DateTimeInterface $createdAt = null;
 
-    #[ORM\Column(name: 'article', type: Types::TEXT)]
+    #[ORM\Column(name: 'article', type: Types::TEXT, nullable: false)]
     private ?string $article = null;
 
-    #[ORM\Column(name: 'title', length: 255)]
+    #[ORM\Column(name: 'title', length: 255, nullable: false)]
     private ?string $title = null;
 
-    #[ORM\Column(name: 'template', length: 20000)]
+    #[ORM\Column(name: 'template', length: 20000, nullable: false)]
     private ?string $template = null;
 
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: ArticleImages::class, orphanRemoval: true)]

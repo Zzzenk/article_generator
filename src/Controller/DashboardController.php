@@ -23,10 +23,10 @@ class DashboardController extends AbstractController
         $allArticles = $generatedArticlesRepository->findBy(['user' => $user->getId()]);
         $articlesThisMonth = $generatedArticlesRepository->lastCreatedArticles($user);
 
-        if ($user->getSubscriptionExpiresAt() == null || $user->getSubscriptionExpiresAt() < (new \DateTime('3 days'))) {
+        if ($user->getSubscriptionExpiresAt() == null || $user->getSubscriptionExpiresAt() < (new \DateTime('3 days'))->format('Y.m.d H:i:s')) {
             $interval = '';
         } else {
-            $interval = (new \DateTime('now'))->diff($user->getSubscriptionExpiresAt())->format('%a дней');
+            $interval = (new \DateTime('now'))->diff($user->getSubscriptionExpiresAt())->format('%a дн.');
         }
 
         return $this->render('dashboard/dashboard.html.twig', [

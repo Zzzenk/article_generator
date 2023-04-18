@@ -10,10 +10,10 @@ class ApiToken
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id')]
+    #[ORM\Column(name: 'id', nullable: false)]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'token', length: 255)]
+    #[ORM\Column(name: 'token', length: 255, nullable: false)]
     private ?string $token;
 
     #[ORM\ManyToOne(inversedBy: 'apiTokens')]

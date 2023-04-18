@@ -7,12 +7,11 @@ use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
+use App\Service\RegistrationService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
@@ -22,7 +21,7 @@ class RegistrationController extends AbstractController
     const EMAIL_FROM = 'Article Generator - генератор статей';
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, EmailVerifier $emailVerifier): Response
+    public function register(Request $request, EmailVerifier $emailVerifier, RegistrationService $registrationService): Response
     {
         $user = new User();
         $apiToken = new ApiToken($user);
@@ -31,31 +30,7 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->addFlash('verify_email', 'Для окончания регистрации подтвердите свой Email');
-            // encode the plain password
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $form->get('password')->getData()
-                )
-            )
-            ->setRoles(["ROLE_USER", "ROLE_FREE"]);
-
-            $apiToken->setToken(sha1(uniqid('token')));
-
-            $entityManager->persist($user);
-            $entityManager->persist($apiToken);
-            $entityManager->flush();
-
-            // generate a signed url and email it to the user
-            $emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-                (new TemplatedEmail())
-                    ->from(new Address($_ENV['NOREPLY_EMAIL'], RegistrationController::EMAIL_FROM))
-                    ->to($user->getEmail())
-                    ->subject('Подтвердите свой Email')
-                    ->htmlTemplate('email/confirmation_email.html.twig')
-            );
-
+            $registrationService->register($emailVerifier, $user, $apiToken, $form);
             return $this->redirectToRoute('app_homepage');
         }
 

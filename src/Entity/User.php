@@ -23,7 +23,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: 'email', length: 180, unique: true, nullable: false)]
     private ?string $email = null;
 
-    #[ORM\Column(name: 'roles')]
+    #[ORM\Column(name: 'roles', nullable: false)]
     private array $roles = [];
 
     /**
@@ -32,10 +32,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: 'password', nullable: false)]
     private ?string $password = null;
 
-    #[ORM\Column(name: 'first_name', length: 255)]
+    #[ORM\Column(name: 'first_name', length: 255, nullable: true)]
     private ?string $firstName = null;
 
-    #[ORM\Column(name: 'is_verified', type: 'boolean')]
+    #[ORM\Column(name: 'is_verified', type: 'boolean', nullable: true)]
     private $isVerified = false;
 
     #[ORM\Column(name: 'subscription_expires_at', type: Types::DATETIME_MUTABLE, nullable: true)]
