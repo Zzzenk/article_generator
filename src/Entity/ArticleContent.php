@@ -6,20 +6,21 @@ use App\Repository\ArticleContentRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ArticleContentRepository::class)]
+#[ORM\Table(name: 'article_content')]
 class ArticleContent
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id', nullable: false)]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'body', length: 10000, nullable: false)]
+    #[ORM\Column(name: 'body', type: 'text')]
     private ?string $body = null;
 
-    #[ORM\Column(name: 'code', length: 255, nullable: false)]
+    #[ORM\Column(name: 'code', type: 'string', length: 255)]
     private ?string $code = null;
 
-    #[ORM\Column(name: 'theme', length: 255, nullable: false)]
+    #[ORM\Column(name: 'theme', type: 'string', length: 255)]
     private ?string $theme = null;
 
     public function getId(): ?int

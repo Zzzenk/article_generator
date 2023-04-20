@@ -3,35 +3,45 @@
 namespace App\Entity;
 
 use App\Repository\ApiTokenRepository;
+use App\Service\ProfileUpdateService;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ApiTokenRepository::class)]
+#[ORM\Table(name: 'api_token')]
 class ApiToken
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id', nullable: false)]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'token', length: 255, nullable: false)]
+    #[ORM\Column(name: 'token', type: 'string', length: 255)]
     private ?string $token;
 
-    #[ORM\ManyToOne(inversedBy: 'apiTokens')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'apiTokens')]
+    #[ORM\JoinColumn(name: 'user_id', nullable: false)]
     private ?User $user;
 
     /**
      * @param User|null $user
      */
-    public function __construct(?User $user)
+    public function __construct(
+        ?User $user,
+        private readonly ProfileUpdateService $profileUpdateService
+    )
     {
         $this->user = $user;
-        $this->token = sha1(uniqid('token'));
+        $this->token = $this->generateToken();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    private function generateToken()
+    {
+        return $this->profileUpdateService->generateNewToken();
     }
 
     public function getToken(): ?string

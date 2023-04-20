@@ -21,42 +21,4 @@ class UnregisteredUsersRepository extends ServiceEntityRepository
         parent::__construct($registry, UnregisteredUsers::class);
     }
 
-    public function save(UnregisteredUsers $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(UnregisteredUsers $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function checkIP($ip)
-    {
-        $sql = 'SELECT ip FROM unregistered_users';
-        $ips = $this->getEntityManager()->getConnection()->executeQuery($sql)->fetchAllAssociative();
-
-        if (array_search($ip, array_column($ips, 'ip')) === false) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function addIP($ip)
-    {
-        $sql = 'INSERT INTO unregistered_users (ip)
-        VALUES (:ip)';
-        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
-        $stmt->bindValue('ip', $ip);
-        $stmt->executeStatement();
-    }
 }

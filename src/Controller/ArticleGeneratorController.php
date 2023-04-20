@@ -2,14 +2,11 @@
 
 namespace App\Controller;
 
-
 use App\Form\ArticleCreateType;
-use App\Repository\GeneratedArticlesRepository;
-use App\Repository\UserRepository;
 use App\Service\ArticleGeneratorService;
-use App\Service\FileUploader;
+use App\Service\DashboardService;
+use App\Service\SubscriptionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,37 +15,24 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class ArticleGeneratorController extends AbstractController
 {
-    public function __construct(
-        private $targetDirectory
-    ) {
-    }
-
     #[Route('/dashboard/create_article', name: 'app_dashboard_create_article')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function input(Request $request, FileUploader $fileUploader, ArticleGeneratorService $articleGeneratorService, UserRepository $userRepository, Security $security, GeneratedArticlesRepository $generatedArticlesRepository): Response
+    public function input(Request $request, ArticleGeneratorService $articleGeneratorService, SubscriptionService $subscriptionService, DashboardService $dashboardService): Response
     {
-        $userRepository->checkSubscription(null);
-        $user = $security->getUser();
+        $user = $this->getUser();
+        $subscriptionService->checkSubscription($user);
 
         $form = $this->createForm(ArticleCreateType::class);
         $form->handleRequest($request);
 
-        if ($userRepository->checkDisabled2Hours(null) === false) {
+        if ($subscriptionService->checkDisabled2Hours($user) === false) {
             if ($form->isSubmitted() && $form->isValid()) {
 
                 /** @var UploadedFile|null $imageFile */
                 $imageFile = $form->get('images')->getData() ?? null;
                 $imageLinks = $form->get('imageLink')->getData() ?? null;
 
-                if ($imageFile) {
-                    foreach ($imageFile as $image) {
-                        $imageFileName[] = $this->targetDirectory . $fileUploader->upload($image);
-                    }
-                }
-
-                if ($imageLinks) {
-                    $imageFileName = $articleGeneratorService->prepareImageByLinks($imageLinks);
-                }
+                $imageFileName = $articleGeneratorService->imageHandler($imageFile, $imageLinks);
 
                 $task = $form->getData();
                 $article = $articleGeneratorService->generateArticle($user, $task, $imageFileName, true);
@@ -58,10 +42,10 @@ class ArticleGeneratorController extends AbstractController
         return $this->render('dashboard/dashboard_create_article.html.twig', [
             'menuActive' => 'create_article',
             'articleCreateForm' => $form->createView(),
-            'disabled' => $userRepository->checkDisabled2Hours(null) ?? null,
-            'disabledFree' => $userRepository->checkDisabledFree() ?? null,
-            'check2hours' => $generatedArticlesRepository->last2Hours($user) ?? null,
-            'subscription' => $userRepository->checkSubscription(null),
+            'disabled' => $subscriptionService->checkDisabled2Hours($user) ?? null,
+            'disabledFree' => $subscriptionService->checkDisabledFree() ?? null,
+            'check2hours' => $dashboardService->last2Hours($user) ?? null,
+            'subscription' => $subscriptionService->checkSubscription($user),
             'keyword' => $article['keywords'] ?? null,
             'article' => $article['article'] ?? null,
         ]);

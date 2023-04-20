@@ -2,8 +2,9 @@
 
 namespace App\Form;
 
-use App\Repository\ArticleContentRepository;
-use App\Repository\UserRepository;
+use App\Service\ArticleGeneratorService;
+use App\Service\SubscriptionService;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -14,26 +15,24 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ArticleCreateType extends AbstractType
 {
-
-    private ArticleContentRepository $articleContentRepository;
-    private UserRepository $userRepository;
-
-    public function __construct(ArticleContentRepository $articleContentRepository, UserRepository $userRepository)
+    public function __construct(
+        private readonly SubscriptionService $subscriptionService,
+        private readonly ArticleGeneratorService $articleGeneratorService,
+        private readonly Security $security
+    )
     {
-        $this->articleContentRepository = $articleContentRepository;
-        $this->userRepository = $userRepository;;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $disabled = $this->userRepository->checkDisabled2Hours(null);
-        $disabledFree = $this->userRepository->checkDisabledFree();
+        $disabled = $this->subscriptionService->checkDisabled2Hours($this->security->getUser());
+        $disabledFree = $this->subscriptionService->checkDisabledFree();
 
         $builder
             ->add('theme', ChoiceType::class, [
                 'placeholder' => 'Выберите тематику',
                 'label' => false,
-                'choices' => array_flip($this->articleContentRepository->themes()),
+                'choices' => array_flip($this->articleGeneratorService->getArticleThemes()),
                 'disabled' => $disabled ?? false,
             ])
             ->add('title', null, [

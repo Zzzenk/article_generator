@@ -1,7 +1,7 @@
 POST http://localhost/api/article
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer ef5bde3dd67f678b83d6c6e822f5762a0bac58d3
+Authorization: Bearer c2af0f70316a1f75064c0ce89489bd4fc82560ec
 
 {
    "theme": "tech",

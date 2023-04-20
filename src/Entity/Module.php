@@ -3,25 +3,24 @@
 namespace App\Entity;
 
 use App\Repository\ModuleRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ModuleRepository::class)]
+#[ORM\Table(name: 'module')]
 class Module
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id', nullable: false)]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'title', length: 255, nullable: false)]
+    #[ORM\Column(name: 'title', type: 'string', length: 255)]
     private ?string $title = null;
 
-    #[ORM\Column(name: 'code', length: 10000, nullable: false)]
+    #[ORM\Column(name: 'code', type: 'text')]
     private ?string $code = null;
 
-    #[ORM\ManyToOne(inversedBy: 'modules')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'modules')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 

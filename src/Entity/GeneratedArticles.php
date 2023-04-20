@@ -5,37 +5,37 @@ namespace App\Entity;
 use App\Repository\GeneratedArticlesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GeneratedArticlesRepository::class)]
+#[ORM\Table(name: 'generated_articles')]
 class GeneratedArticles
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id', nullable: false)]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'generatedArticles')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'generatedArticles')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\Column(name: 'created_at', type: Types::DATETIME_MUTABLE, nullable: false)]
+    #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
     private ?\DateTimeInterface $createdAt = null;
 
-    #[ORM\Column(name: 'article', type: Types::TEXT, nullable: false)]
+    #[ORM\Column(name: 'article', type: 'text')]
     private ?string $article = null;
 
-    #[ORM\Column(name: 'title', length: 255, nullable: false)]
+    #[ORM\Column(name: 'title', type: 'string', length: 255)]
     private ?string $title = null;
 
-    #[ORM\Column(name: 'template', length: 20000, nullable: false)]
+    #[ORM\Column(name: 'template', type: 'text')]
     private ?string $template = null;
 
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: ArticleImages::class, orphanRemoval: true)]
     private Collection $articleImages;
 
-    #[ORM\Column(name: 'keywords', length: 1000, nullable: true)]
+    #[ORM\Column(name: 'keywords', type: 'string', length: 1000)]
     private ?string $keywords = null;
 
     public function __construct()
@@ -143,7 +143,7 @@ class GeneratedArticles
         return $this->keywords;
     }
 
-    public function setKeywords(?array $keywords): self
+    public function setKeywords(?string $keywords): self
     {
         $this->keywords = $keywords;
 

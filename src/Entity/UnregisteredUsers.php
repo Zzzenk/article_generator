@@ -6,14 +6,15 @@ use App\Repository\UnregisteredUsersRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UnregisteredUsersRepository::class)]
+#[ORM\Table(name: 'unregistered_users')]
 class UnregisteredUsers
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id', nullable: false)]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'ip', length: 255, nullable: true)]
+    #[ORM\Column(name: 'ip', type: 'string', length: 255)]
     private ?string $IP = null;
 
     public function getId(): ?int

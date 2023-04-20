@@ -3,19 +3,28 @@
 namespace App\Service;
 
 use App\Entity\ArticleContent;
+use App\Entity\ArticleImages;
+use App\Entity\GeneratedArticles;
 use App\Entity\Module;
+use App\Repository\ApiTokenRepository;
 use App\Repository\ArticleContentRepository;
 use App\Repository\GeneratedArticlesRepository;
-use App\Repository\ModuleRepository;
-use Symfony\Component\HttpKernel\Attribute\AsController;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[AsController]
 class ArticleGeneratorService
 {
     public function __construct(
+        private readonly string $targetDirectory,
         private readonly ArticleContentRepository $articleContentRepository,
-        private readonly ModuleRepository $moduleRepository,
-        private readonly GeneratedArticlesRepository $generatedArticlesRepository
+        private readonly EntityManagerInterface $em,
+        private readonly GeneratedArticlesRepository $generatedArticlesRepository,
+        private readonly ModuleService $moduleService,
+        private readonly FileUploader $fileUploader,
+        private readonly SubscriptionService $subscriptionService,
+        private readonly ValidatorInterface $validator,
+        private readonly ApiTokenRepository $apiTokenRepository,
     ) {
     }
 
@@ -105,7 +114,7 @@ class ArticleGeneratorService
             }
 
             if ($insert === true) {
-                $this->generatedArticlesRepository->addArticle($user, $title, $article, $requestArray, $imageFileName, $keywords);
+                $this->addArticle($user, $title, $article, $requestArray, $imageFileName, $keywords);
             }
 
             return [
@@ -116,6 +125,73 @@ class ArticleGeneratorService
         }
     }
 
+    public function addArticle($user, $title, $article, $template, $imageFileName, $keywords)
+    {
+        $template['images'] = null;
+        foreach ($template as $key => $value) {
+            $templateArray[] = $key . '_' . $value;
+        }
+        $template = implode(',', $templateArray);
+
+        $newArticle = new GeneratedArticles();
+        $newArticle
+            ->setUser($user)
+            ->setArticle($article)
+            ->setTitle($title)
+            ->setTemplate($template)
+            ->setCreatedAt(new DateTime('now'))
+            ->setKeywords(serialize($keywords))
+        ;
+        $this->em->persist($newArticle);
+        $this->em->flush();
+
+        $articleObject = $this->generatedArticlesRepository->findOneBy(['id' => $newArticle->getId()]);
+
+        if ($imageFileName != null) {
+            $this->addArticleImage($articleObject, $imageFileName);
+        }
+    }
+
+    public function imageHandler($imageFile, $imageLinks): array
+    {
+        $imageFileName = [];
+        if ($imageFile) {
+            foreach ($imageFile as $image) {
+                $imageFileName[] = $this->targetDirectory . $this->fileUploader->upload($image);
+            }
+        }
+
+        if ($imageLinks) {
+            $imageFileName = $this->prepareImageByLinks($imageLinks);
+        }
+
+        return $imageFileName;
+    }
+
+    public function addArticleImage($articleObject, $imageFileName)
+    {
+        /** @var ArticleImages|null $newArticleImage */
+        /** @var GeneratedArticles|null $articleObject */
+
+        $newArticleImage = new ArticleImages;
+        $newArticleImage
+            ->setArticle($articleObject);
+
+        if (is_array($imageFileName)) {
+            foreach ($imageFileName as $image) {
+                $newArticleImage
+                    ->setImageLink($image);
+                $this->em->persist($newArticleImage);
+            }
+        } else {
+            $newArticleImage
+                ->setImageLink($imageFileName);
+            $this->em->persist($newArticleImage);
+        }
+        $this->em->flush();
+
+    }
+
     public function templateSelect($user, $sizeFrom, $sizeTo, $imageFileName): array
     {
         if ($sizeTo == null) {
@@ -123,8 +199,8 @@ class ArticleGeneratorService
         }
 
         /** @var Module|null $userModules */
-        if ($user == null || $this->moduleRepository->getUserTemplates($user->getId()) == null) {
-            $userModules = $this->moduleRepository->defaultTemplates($imageFileName);
+        if ($user == null || $this->moduleService->getUserTemplates($user->getId()) == null) {
+            $userModules = $this->moduleService->defaultTemplates($imageFileName);
             shuffle($userModules);
 
             for ($i = $sizeFrom; $i <= $sizeTo; $i++) {
@@ -133,7 +209,7 @@ class ArticleGeneratorService
             }
 
         } elseif ($imageFileName == null) {
-            $userModules = $this->moduleRepository->getUserTemplates($user->getId());
+            $userModules = $this->moduleService->getUserTemplates($user->getId());
             shuffle($userModules);
 
             foreach ($userModules as $module) {
@@ -147,7 +223,7 @@ class ArticleGeneratorService
             }
 
         } else {
-            $userModules = $this->moduleRepository->getUserTemplates($user->getId());
+            $userModules = $this->moduleService->getUserTemplates($user->getId());
             shuffle($userModules);
 
             for ($i = $sizeFrom; $i <= $sizeTo; $i++) {
@@ -159,15 +235,42 @@ class ArticleGeneratorService
         return $template;
     }
 
+    public function getArticleThemes()
+    {
+        $qb = $this->em->createQueryBuilder();
+        $themesArray = $qb
+            ->select('ac.code', 'ac.theme')
+            ->from('App:ArticleContent', 'ac')
+            ->getQuery()
+            ->getResult()
+        ;
+
+        foreach ($themesArray as $array) {
+            $implodedArray[] = (implode(',', $array));
+        }
+
+        $keysList = explode(',', implode(',', array_unique($implodedArray)));
+
+        foreach ($keysList as $key => $item) {
+            if (!is_float($key/2)) {
+                $themes[$item] = null;
+                $prevItem = $item;
+            } else {
+                $themes[$prevItem] = $item;
+            }
+        }
+
+        return $themes;
+    }
+
+
     public function prepareImageByLinks($imageLinks)
     {
         $images = [];
         foreach (explode(',', $imageLinks) as $key => $image) {
             $image = trim($image);
-            if ($this->checkMimeType($image) != false) {
+            if ($this->checkMimeType($image)) {
                 $images[$key] = trim($image);
-            } else {
-                continue;
             }
         }
         return $images ?? null;
@@ -187,6 +290,67 @@ class ArticleGeneratorService
             } else {
                 return false;
             }
+        }
+    }
+
+    public function validateApiRequest($parameters, $token)
+    {
+        $user = $this->apiTokenRepository->findOneBy(['token' => $token])->getUser();
+        $theme = $this->articleContentRepository->findOneBy(['code' => $parameters['theme']]);
+
+        $errors = $this->validator->validate($parameters);
+
+        if (count($errors) > 0) {
+            $errorsString = (string) $errors;
+            return [
+                'error' => $errorsString,
+            ];
+        } elseif ($theme === null) {
+            return [
+                'error' => 'Такой тематики не существует',
+            ];
+        } elseif ($this->subscriptionService->checkDisabled2Hours($user)) {
+            return [
+                'error' => 'Вы уже сгенерировали 2 статьи за последние 2 часа. Оформите подписку PRO, чтобы снять ограничения',
+            ];
+        } elseif ($parameters['theme'] == null || $parameters['title'] == null) {
+            return [
+                'error' => 'Отсутствуют обязательные параметры: theme, title',
+            ];
+        } else {
+            $requestArray = [
+                "theme" => $parameters['theme'],
+                "title" => $parameters['title'],
+                "keyword0" => $parameters['keywords']['keyword0'],
+                "keyword1" => $parameters['keywords']['keyword1'],
+                "keyword2" => $parameters['keywords']['keyword2'],
+                "keyword3" => $parameters['keywords']['keyword3'],
+                "keyword4" => $parameters['keywords']['keyword4'],
+                "keyword5" => $parameters['keywords']['keyword5'],
+                "keyword6" => $parameters['keywords']['keyword6'],
+                "sizeFrom" => $parameters['sizeFrom'] ?? null,
+                "sizeTo" => $parameters['sizeTo'] ?? null,
+                "word1" => $parameters['word1'] ?? null,
+                "word1Count" => $parameters['word1Count'] ?? null,
+                "word2" => $parameters['word2'] ?? null,
+                "word2Count" => $parameters['word2Count'] ?? null,
+                "images" => $parameters['images'] ?? null,
+            ];
+
+            if ($this->subscriptionService->checkSubscription($user) == 'FREE') {
+                $requestArray['keyword1'] = null;
+                $requestArray['keyword2'] = null;
+                $requestArray['keyword3'] = null;
+                $requestArray['keyword4'] = null;
+                $requestArray['keyword5'] = null;
+                $requestArray['keyword6'] = null;
+                $requestArray['word2'] = null;
+                $requestArray['word2Count'] = null;
+                $requestArray['images'] = null;
+            }
+
+            return $this->generateArticle($user, $requestArray, $requestArray['images'], true);
+
         }
     }
 

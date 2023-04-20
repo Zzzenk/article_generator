@@ -5,22 +5,22 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: 'user')]
 #[UniqueEntity(fields: ['email'], message: 'Аккаунт с таким Email уже зарегистрирован')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id', nullable: false)]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'email', length: 180, unique: true, nullable: false)]
+    #[ORM\Column(name: 'email', type: 'string', length: 255, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column(name: 'roles', nullable: false)]
@@ -29,22 +29,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
-    #[ORM\Column(name: 'password', nullable: false)]
+    #[ORM\Column(name: 'password', type: 'string')]
     private ?string $password = null;
 
-    #[ORM\Column(name: 'first_name', length: 255, nullable: true)]
+    #[ORM\Column(name: 'first_name', type: 'string', length: 255, nullable: true)]
     private ?string $firstName = null;
 
     #[ORM\Column(name: 'is_verified', type: 'boolean', nullable: true)]
     private $isVerified = false;
 
-    #[ORM\Column(name: 'subscription_expires_at', type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(name: 'subscription_expires_at', type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $subscriptionExpiresAt = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ApiToken::class, orphanRemoval: true)]
     private Collection $apiTokens;
 
-    #[ORM\Column(name: 'new_email', length: 255, nullable: true)]
+    #[ORM\Column(name: 'new_email', type: 'string', length: 255, nullable: true)]
     private ?string $newEmail = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Module::class, orphanRemoval: true)]

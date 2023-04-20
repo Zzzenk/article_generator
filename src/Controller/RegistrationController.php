@@ -7,24 +7,21 @@ use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
+use App\Service\ProfileUpdateService;
 use App\Service\RegistrationService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    const EMAIL_FROM = 'Article Generator - генератор статей';
-
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, EmailVerifier $emailVerifier, RegistrationService $registrationService): Response
+    public function register(Request $request, EmailVerifier $emailVerifier, RegistrationService $registrationService, ProfileUpdateService $profileUpdateService): Response
     {
         $user = new User();
-        $apiToken = new ApiToken($user);
+        $apiToken = new ApiToken($user, $profileUpdateService);
 
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);

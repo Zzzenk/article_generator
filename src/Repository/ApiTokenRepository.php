@@ -16,38 +16,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ApiTokenRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        ManagerRegistry $registry,
+    )
     {
         parent::__construct($registry, ApiToken::class);
-    }
-
-    public function save(ApiToken $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(ApiToken $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function genereteNewApiToken($userId)
-    {
-        $newToken = sha1(uniqid('token'));
-        $sql = 'UPDATE api_token
-        SET token = :newToken
-        WHERE user_id = :userId';
-        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
-        $stmt->bindValue('newToken', $newToken);
-        $stmt->bindValue('userId', $userId);
-        $stmt->executeStatement();
     }
 }
