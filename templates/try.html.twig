@@ -21,7 +21,7 @@
 
                     <h2 class="card-title text-center mb-4">Создание статьи</h2>
 
-                    {% if disabled %}
+                    {% if disabled == true %}
                         <div class="alert alert-info" role="alert">
                             <a href="{{ path('app_register') }}">Зарегистрируйтесь</a>, чтобы получить доступ к расширенному функционалу генератора
                         </div>
@@ -30,11 +30,11 @@
                     <form class="form-signin" action="{{ path('app_try') }}" method="post">
                         <input type="hidden" name="try" value="try">
                         <div class="form-label-group">
-                            <input type="text" id="title" name="title" class="form-control" placeholder="Заголовок статьи" value="{{ app.request.request.get('title') }}" {{ disabled }} required>
+                            <input type="text" id="title" name="title" class="form-control" placeholder="Заголовок статьи" value="{{ app.request.request.get('title') }}" {% if disabled == true %}disabled{% endif %} required>
                             <label for="title">Заголовок статьи</label>
                         </div>
                         <div class="form-label-group">
-                            <input type="text" id="word1" name="word1" class="form-control" placeholder="Продвигаемое слово" value="{{ app.request.request.get('word1') }}" {{ disabled }} required>
+                            <input type="text" id="word1" name="word1" class="form-control" placeholder="Продвигаемое слово" value="{{ app.request.request.get('word1') }}" {% if disabled == true %}disabled{% endif %} required>
                             <label for="word1">Продвигаемое слово</label>
                         </div>
 

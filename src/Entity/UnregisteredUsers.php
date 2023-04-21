@@ -12,10 +12,10 @@ class UnregisteredUsers
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'id', type: 'integer')]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(name: 'ip', type: 'string', length: 255)]
-    private ?string $IP = null;
+    private string $IP;
 
     public function getId(): ?int
     {

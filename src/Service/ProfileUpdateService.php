@@ -8,6 +8,7 @@ use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -22,6 +23,12 @@ class ProfileUpdateService extends AbstractController
     ) {
     }
 
+    /**
+     * @param Request $request
+     * @param EmailVerifier $emailVerifier
+     * @param $user
+     * @return RedirectResponse|void
+     */
     public function updateProfile(Request $request, EmailVerifier $emailVerifier, $user)
     {
         if ($request->request->has('input')) {
@@ -79,7 +86,11 @@ class ProfileUpdateService extends AbstractController
         }
     }
 
-    public function insertNewToken($userId)
+    /**
+     * @param int $userId
+     * @return void
+     */
+    public function insertNewToken(int $userId): void
     {
         $token = $this->apiTokenRepository->findOneBy(['user' => $userId]);
 
@@ -87,12 +98,20 @@ class ProfileUpdateService extends AbstractController
         $this->em->flush();
     }
 
+    /**
+     * @return string
+     */
     public function generateNewToken(): string
     {
         return sha1(uniqid('token'));
     }
 
-    public function setTempEmail(string $newEmail, string $oldEmail)
+    /**
+     * @param string $newEmail
+     * @param string $oldEmail
+     * @return void
+     */
+    public function setTempEmail(string $newEmail, string $oldEmail): void
     {
         $em = $this->em;
         $user = $this->userRepository->findOneBy(['email' => $oldEmail]);
@@ -103,7 +122,12 @@ class ProfileUpdateService extends AbstractController
         $em->flush();
     }
 
-    public function updateEmail(string $newEmail, string $oldEmail)
+    /**
+     * @param string $newEmail
+     * @param string $oldEmail
+     * @return void
+     */
+    public function updateEmail(string $newEmail, string $oldEmail): void
     {
         $em = $this->em;
         $user = $this->userRepository->findOneBy(['email' => $oldEmail]);

@@ -24,13 +24,17 @@ services:
             - '../src/Kernel.php'
     Twig\Extension\StringLoaderExtension:
 
+    App\Service\ArticleGeneratorService:
+        arguments:
+            $targetDirectory: '/uploads/article_images/'
+
     App\Service\FileUploader:
         arguments:
             $targetDirectory: '%images_upload_directory%'
 
-    App\Service\ArticleGeneratorService:
+    App\Service\ModuleService:
         arguments:
-            $targetDirectory: '/uploads/article_images/'
+            $rootPath: '%kernel.project_dir%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

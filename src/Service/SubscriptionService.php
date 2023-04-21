@@ -3,9 +3,11 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -18,11 +20,18 @@ class SubscriptionService
         private readonly EntityManagerInterface $em,
         private readonly TokenStorageInterface $tokenStorage,
         private readonly Security $security,
-        private readonly DashboardService $dashboardService,
+        private readonly UserRepository $userRepository,
     ) {
     }
 
-    public function sendConfirmationEmail(MailerInterface $mailer, $user, $subscription)
+    /**
+     * @param MailerInterface $mailer
+     * @param UserInterface $user
+     * @param string $subscription
+     * @return void
+     * @throws TransportExceptionInterface
+     */
+    public function sendConfirmationEmail(MailerInterface $mailer, UserInterface $user, string $subscription): void
     {
         $email = new TemplatedEmail();
         $email
@@ -37,31 +46,27 @@ class SubscriptionService
         $mailer->send($email);
     }
 
-    public function refreshToken(UserInterface $user, $newRole): void
+    /**
+     * @param UserInterface $user
+     * @param array $newRole
+     * @return void
+     */
+    public function refreshToken(UserInterface $user, array $newRole): void
     {
         $this->tokenStorage->setToken(
             new UsernamePasswordToken($user, 'main', $newRole)
         );
     }
 
-    public function findRoles($user)
-    {
-        $qb = $this->em->createQueryBuilder();
-        return $qb
-            ->select('u.roles')
-            ->from(User::class, 'u')
-            ->where('u.id = :id')
-            ->setParameter('id', $user->getId())
-            ->getQuery()
-            ->getResult()
-            ;
-    }
-
-    public function orderSubscription($user, string $subscription)
+    /**
+     * @param UserInterface $user
+     * @param string $subscription
+     * @return void
+     */
+    public function orderSubscription(UserInterface $user, string $subscription): void
     {
         /** @var User|null $user */
-        $oldRoles = implode(', ', $this->findRoles($user)[0]['roles']);
-
+        $oldRoles = implode(', ', $user->getRoles());
         $newRole = str_replace(['ROLE_FREE', 'ROLE_PLUS', 'ROLE_PRO'], 'ROLE_' . $subscription, $oldRoles);
         $newRoleArray = explode(', ', $newRole);
 
@@ -73,15 +78,17 @@ class SubscriptionService
         $this->em->flush();
 
         $this->refreshToken($user, $newRoleArray);
-
-        return true;
     }
 
-    public function resetSubscription($user)
+    /**
+     * @param UserInterface $user
+     * @return void
+     */
+    public function resetSubscription(UserInterface $user): void
     {
         /** @var User|null $user */
 
-        $oldRoles = implode(', ', $this->findRoles($user)[0]['roles']);
+        $oldRoles = implode(', ', $user->getRoles());
         $newRole = str_replace([', ROLE_PLUS', ', ROLE_PRO'], ', ROLE_FREE', $oldRoles);
 
         $newRoleArray = explode(', ', $newRole);
@@ -92,8 +99,11 @@ class SubscriptionService
         $this->refreshToken($user, $newRoleArray);
     }
 
-
-    public function checkSubscription($user)
+    /**
+     * @param UserInterface $user
+     * @return string
+     */
+    public function checkSubscription(UserInterface $user): string
     {
         /** @var User|null $user */
 
@@ -116,22 +126,29 @@ class SubscriptionService
         }
     }
 
-    public function checkDisabledFree()
+    /**
+     * @return bool
+     */
+    public function checkDisabledFree(): bool
     {
         if ($this->security->isGranted('ROLE_FREE')) {
-            return 'disabled';
+            return true;
         } else {
             return false;
         }
     }
 
-    public function checkDisabled2Hours($user)
+    /**
+     * @param UserInterface $user
+     * @return bool
+     */
+    public function checkDisabled2Hours(UserInterface $user): bool
     {
         /** @var User|null $user */
 
-        if ($this->dashboardService->last2Hours($user) === false) {
+        if ($this->userRepository->last2Hours($user) === false) {
             if ($this->checkSubscription($user) == 'FREE' || $this->checkSubscription($user) == 'PLUS') {
-                return 'disabled';
+                return true;
             } else {
                 return false;
             }
@@ -139,5 +156,4 @@ class SubscriptionService
             return false;
         }
     }
-
 }

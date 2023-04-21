@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Service\ArticleGeneratorService;
+use App\Repository\GeneratedArticlesRepository;
 use App\Service\SubscriptionService;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
@@ -17,8 +17,8 @@ class ArticleCreateType extends AbstractType
 {
     public function __construct(
         private readonly SubscriptionService $subscriptionService,
-        private readonly ArticleGeneratorService $articleGeneratorService,
-        private readonly Security $security
+        private readonly GeneratedArticlesRepository $generatedArticlesRepository,
+        private readonly Security $security,
     )
     {
     }
@@ -32,17 +32,17 @@ class ArticleCreateType extends AbstractType
             ->add('theme', ChoiceType::class, [
                 'placeholder' => 'Выберите тематику',
                 'label' => false,
-                'choices' => array_flip($this->articleGeneratorService->getArticleThemes()),
-                'disabled' => $disabled ?? false,
+                'choices' => array_flip($this->generatedArticlesRepository->getArticleThemes()),
+                'disabled' => $disabled,
             ])
             ->add('title', null, [
                 'label' => 'Заголовок',
-                'disabled' => $disabled ?? false,
+                'disabled' => $disabled,
             ])
             ->add('keyword0', null, [
                 'required' => false,
                 'label' => 'Ключевое слово',
-                'disabled' => $disabled ?? false,
+                'disabled' => $disabled,
             ])
             ->add('keyword1', null, [
                 'required' => false,
@@ -77,25 +77,25 @@ class ArticleCreateType extends AbstractType
             ->add('sizeFrom', IntegerType::class, [
                 'required' => false,
                 'label' => 'Размер статьи от',
-                'disabled' => $disabled ?? false,
+                'disabled' => $disabled,
             ])
             ->add('sizeTo', IntegerType::class, [
                 'required' => false,
                 'label' => 'до',
-                'disabled' => $disabled ?? false,
+                'disabled' => $disabled,
             ])
             ->add('word1', null, [
                 'required' => false,
                 'label' => 'Продвигаемое слово 1',
-                'disabled' => $disabled ?? false,
+                'disabled' => $disabled,
             ])
             ->add('word1Count', IntegerType::class, [
                 'required' => false,
                 'label' => 'кол-во',
-                'disabled' => $disabled ?? false,
+                'disabled' => $disabled,
             ])
             ->add('word2', null, [
-                'required' => $disabled ?? false,
+                'required' => $disabled,
                 'label' => 'Продвигаемое слово 2',
                 'disabled' => $disabled || $disabledFree,
             ])

@@ -16,8 +16,6 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 
 class ApiTokenAuthenticator extends AbstractAuthenticator
 {
-
-
     private ApiTokenRepository $apiTokenRepository;
 
     public function __construct(ApiTokenRepository $apiTokenRepository)
@@ -25,11 +23,19 @@ class ApiTokenAuthenticator extends AbstractAuthenticator
         $this->apiTokenRepository = $apiTokenRepository;
     }
 
+    /**
+     * @param Request $request
+     * @return bool|null
+     */
     public function supports(Request $request): ?bool
     {
         return $request->headers->has('Authorization')  && 0 === strpos($request->headers->get('Authorization'), 'Bearer ');
     }
 
+    /**
+     * @param Request $request
+     * @return Passport
+     */
     public function authenticate(Request $request): Passport
     {
         $apiToken = substr($request->headers->get('authorization'), 7);
@@ -44,11 +50,22 @@ class ApiTokenAuthenticator extends AbstractAuthenticator
         return new SelfValidatingPassport(new UserBadge($user->getUser()->getEmail()));
     }
 
+    /**
+     * @param Request $request
+     * @param TokenInterface $token
+     * @param string $firewallName
+     * @return Response|null
+     */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         return null;
     }
 
+    /**
+     * @param Request $request
+     * @param AuthenticationException $exception
+     * @return Response|null
+     */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         $data = [

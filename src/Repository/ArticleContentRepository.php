@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\ArticleContent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,9 +17,23 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ArticleContentRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly EntityManagerInterface $em
+    ) {
         parent::__construct($registry, ArticleContent::class);
+    }
+
+    public function findContentForDemoGeneration(int $limit)
+    {
+        $qb = $this->em->createQueryBuilder();
+        return $qb
+            ->select('ac.body')
+            ->from(ArticleContent::class, 'ac')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult()
+            ;
     }
 
 }

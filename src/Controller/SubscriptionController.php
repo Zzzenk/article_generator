@@ -38,11 +38,8 @@ class SubscriptionController extends AbstractController
         $subscription = $request->get('order_subscription');
 
         $subscriptionService->orderSubscription($user, $subscription);
-
         $subscriptionService->sendConfirmationEmail($mailer, $user, $subscription);
 
         return $this->redirectToRoute('app_dashboard_subscription');
     }
-
-
 }

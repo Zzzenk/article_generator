@@ -14,6 +14,10 @@ class FileUploader
     ) {
     }
 
+    /**
+     * @param UploadedFile $file
+     * @return string
+     */
     public function upload(UploadedFile $file): string
     {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
@@ -21,16 +25,11 @@ class FileUploader
         $fileName = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
         try {
-            $file->move($this->getTargetDirectory(), $fileName);
+            $file->move($this->targetDirectory, $fileName);
         } catch (FileException $e) {
-            // ... handle exception if something happens during file upload
+            throw new FileException($e->getMessage());
         }
 
         return $fileName;
-    }
-
-    public function getTargetDirectory(): string
-    {
-        return $this->targetDirectory;
     }
 }

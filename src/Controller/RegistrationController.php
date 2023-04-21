@@ -21,7 +21,7 @@ class RegistrationController extends AbstractController
     public function register(Request $request, EmailVerifier $emailVerifier, RegistrationService $registrationService, ProfileUpdateService $profileUpdateService): Response
     {
         $user = new User();
-        $apiToken = new ApiToken($user, $profileUpdateService);
+        $apiToken = new ApiToken($user);
 
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);

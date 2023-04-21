@@ -6,10 +6,12 @@ use App\Repository\ApiTokenRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
 class EmailVerifier extends AbstractController
@@ -22,6 +24,12 @@ class EmailVerifier extends AbstractController
     ) {
     }
 
+    /**
+     * @param string $verifyEmailRouteName
+     * @param UserInterface $user
+     * @param TemplatedEmail $email
+     * @return RedirectResponse|void
+     */
     public function sendEmailConfirmation(string $verifyEmailRouteName, UserInterface $user, TemplatedEmail $email)
     {
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
@@ -47,6 +55,12 @@ class EmailVerifier extends AbstractController
         }
     }
 
+    /**
+     * @param Request $request
+     * @param UserInterface $user
+     * @return void
+     * @throws VerifyEmailExceptionInterface
+     */
     public function handleEmailConfirmation(Request $request, UserInterface $user): void
     {
         $this->verifyEmailHelper->validateEmailConfirmation($request->getUri(), $user->getId(), $user->getEmail());
@@ -57,6 +71,13 @@ class EmailVerifier extends AbstractController
         $this->entityManager->flush();
     }
 
+    /**
+     * @param string $verifyEmailRouteName
+     * @param UserInterface $user
+     * @param TemplatedEmail $email
+     * @param string $newEmail
+     * @return RedirectResponse|void
+     */
     public function changeUserEmail(string $verifyEmailRouteName, UserInterface $user, TemplatedEmail $email, string $newEmail)
     {
         $apiToken = $this->apiTokenRepository->findOneBy(['user' => $user->getId()])->getToken();

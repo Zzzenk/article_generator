@@ -13,35 +13,27 @@ class ApiToken
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'id', type: 'integer')]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(name: 'token', type: 'string', length: 255)]
-    private ?string $token;
+    private string $token;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'apiTokens')]
     #[ORM\JoinColumn(name: 'user_id', nullable: false)]
-    private ?User $user;
+    private User $user;
 
     /**
      * @param User|null $user
      */
-    public function __construct(
-        ?User $user,
-        private readonly ProfileUpdateService $profileUpdateService
-    )
+    public function __construct(?User $user)
     {
         $this->user = $user;
-        $this->token = $this->generateToken();
+        $this->token = sha1(uniqid('token'));
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    private function generateToken()
-    {
-        return $this->profileUpdateService->generateNewToken();
     }
 
     public function getToken(): ?string

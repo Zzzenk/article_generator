@@ -12,17 +12,17 @@ class Module
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'id', type: 'integer')]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(name: 'title', type: 'string', length: 255)]
-    private ?string $title = null;
+    private string $title;
 
     #[ORM\Column(name: 'code', type: 'text')]
-    private ?string $code = null;
+    private string $code;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'modules')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private User $user;
 
     public function getId(): ?int
     {

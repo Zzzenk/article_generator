@@ -19,13 +19,11 @@ class ProfileController extends AbstractController
     {
         $user = $this->getUser();
 
-        $apiToken = $apiTokenRepository->findOneBy(['user' => $user->getId()])->getToken();
-
         return $this->render('dashboard/dashboard_profile.html.twig', [
             'menuActive' => 'profile',
             'email' => $user->getEmail(),
             'firstName' => $user->getFirstName(),
-            'apiToken' => $apiToken,
+            'apiToken' => $apiTokenRepository->findOneBy(['user' => $user->getId()])->getToken(),
         ]);
     }
 

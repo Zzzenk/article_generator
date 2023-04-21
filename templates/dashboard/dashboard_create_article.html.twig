@@ -231,7 +231,7 @@
 
                     </div>
 
-                    <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" {{ disabled }}>
+                    <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" {% if disabled == true %}disabled{% endif %}>
                         Создать
                     </button>
                     </form>

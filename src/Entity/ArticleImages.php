@@ -12,14 +12,14 @@ class ArticleImages
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'id', type: 'integer')]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(name: 'image_link', type: 'string', length: 255)]
-    private ?string $imageLink = null;
+    private string $imageLink;
 
     #[ORM\ManyToOne(targetEntity: GeneratedArticles::class, inversedBy: 'articleImages')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?GeneratedArticles $article = null;
+    private GeneratedArticles $article;
 
     public function getId(): ?int
     {

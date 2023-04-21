@@ -4,7 +4,8 @@ namespace App\Controller;
 
 use App\Repository\GeneratedArticlesRepository;
 use App\Repository\ModuleRepository;
-use App\Service\DashboardService;
+use App\Repository\UserRepository;
+use App\Service\ArticleGeneratorService;
 use App\Service\ModuleService;
 use App\Service\SubscriptionService;
 use Knp\Component\Pager\PaginatorInterface;
@@ -19,22 +20,21 @@ class DashboardController extends AbstractController
 {
     #[Route('/', name: 'app_dashboard')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function dashboard(GeneratedArticlesRepository $generatedArticlesRepository, DashboardService $dashboardService, SubscriptionService $subscriptionService): Response
+    public function dashboard(GeneratedArticlesRepository $generatedArticlesRepository, UserRepository $userRepository, SubscriptionService $subscriptionService): Response
     {
         $user = $this->getUser();
         $allArticles = $generatedArticlesRepository->findBy(['user' => $user->getId()]);
-        $articlesThisMonth = $dashboardService->lastCreatedArticles($user);
+        $articlesThisMonth = $userRepository->lastCreatedArticles($user);
 
-        if ($user->getSubscriptionExpiresAt() == null || $user->getSubscriptionExpiresAt() > (new \DateTime('+3 days'))) {
-            $interval = '';
-        } else {
+        if ($user->getSubscriptionExpiresAt() != null && $user->getSubscriptionExpiresAt() < (new \DateTime('+3 days'))) {
             $interval = (new \DateTime('now'))->diff($user->getSubscriptionExpiresAt())->format('%a дней');
         }
+
 
         return $this->render('dashboard/dashboard.html.twig', [
             'menuActive' => 'dashboard',
             'subscription' => $subscriptionService->checkSubscription($user),
-            'expiresIn' => $interval,
+            'expiresIn' => $interval ?? null,
             'articlesThisMonth' => count($articlesThisMonth),
             'totalArticles' => count($allArticles),
             'latestArticle' => end($allArticles),
@@ -69,9 +69,9 @@ class DashboardController extends AbstractController
 
     #[Route('/template/delete/{id}', name: 'app_dashboard_template_delete')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function templateDelete(Request $request, ModuleService $moduleService): Response
+    public function templateDelete(Request $request, ModuleRepository $moduleRepository): Response
     {
-        $moduleService->deleteTemplate($request->attributes->get('id'));
+        $moduleRepository->deleteTemplate($request->attributes->get('id'));
         $this->addFlash('success', 'Шаблон успешно удален');
 
         return $this->redirectToRoute('app_dashboard_templates');
@@ -79,7 +79,7 @@ class DashboardController extends AbstractController
 
     #[Route('/history', name: 'app_dashboard_history')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function history(PaginatorInterface $paginator, Request $request, GeneratedArticlesRepository $generatedArticlesRepository): Response
+    public function articlesHistory(PaginatorInterface $paginator, Request $request, GeneratedArticlesRepository $generatedArticlesRepository): Response
     {
         $generatedArticles = $generatedArticlesRepository->findBy(['user' => $this->getUser()->getId()]);
 
@@ -96,20 +96,17 @@ class DashboardController extends AbstractController
         ]);
     }
 
-
     #[Route('/article_detail/{id}', name: 'app_dashboard_article_detail')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function article_detail(Request $request, GeneratedArticlesRepository $generatedArticlesRepository, DashboardService $dashboardService): Response
+    public function articleDetail(Request $request, GeneratedArticlesRepository $generatedArticlesRepository, ArticleGeneratorService $articleGeneratorService): Response
     {
         $generatedArticle = $generatedArticlesRepository->findOneBy(['id' => $request->get('id')]);
-        $repeatParams = explode(',', implode(' ', $dashboardService->getArticleTemplate($request->get('id'))[0]));
-        $repeatParams = str_replace('_', '=',implode('&', $repeatParams));
 
         return $this->render('dashboard/dashboard_article_detail.html.twig', [
             'menuActive' => 'article_detail',
             'keyword' => explode(',', $generatedArticle->getKeywords()),
             'article' => $generatedArticle->getArticle(),
-            'repeatParams' => $repeatParams,
+            'repeatParams' => $articleGeneratorService->getArticleParams($request->get('id')),
             ]);
     }
 }

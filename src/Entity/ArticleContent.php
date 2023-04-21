@@ -12,16 +12,16 @@ class ArticleContent
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'id', type: 'integer')]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(name: 'body', type: 'text')]
-    private ?string $body = null;
+    private string $body;
 
     #[ORM\Column(name: 'code', type: 'string', length: 255)]
-    private ?string $code = null;
+    private string $code;
 
     #[ORM\Column(name: 'theme', type: 'string', length: 255)]
-    private ?string $theme = null;
+    private string $theme;
 
     public function getId(): ?int
     {

@@ -14,9 +14,7 @@ class ApiArticleGeneratorController extends AbstractController
     public function index(Request $request, ArticleGeneratorService $articleGeneratorService): JsonResponse
     {
         $parameters = json_decode($request->getContent(), true);
-
         $token = substr($request->headers->get('Authorization'), 7);
-
         $generated = $articleGeneratorService->validateApiRequest($parameters, $token);
 
         if (isset($generated['error'])) {
@@ -29,7 +27,5 @@ class ApiArticleGeneratorController extends AbstractController
                 'article' => $generated['article'],
             ]);
         }
-
-
     }
 }

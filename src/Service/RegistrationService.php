@@ -2,11 +2,12 @@
 
 namespace App\Service;
 
+use App\Entity\ApiToken;
+use App\Entity\User;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Mime\Address;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class RegistrationService extends AbstractController
@@ -15,11 +16,18 @@ class RegistrationService extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
-    )
-    {
+        private readonly MailerService $mailerService,
+    ) {
     }
 
-    public function register($emailVerifier, $user, $apiToken, $form)
+    /**
+     * @param EmailVerifier $emailVerifier
+     * @param User $user
+     * @param ApiToken $apiToken
+     * @param FormInterface $form
+     * @return void
+     */
+    public function register(EmailVerifier $emailVerifier, User $user, ApiToken $apiToken, FormInterface $form): void
     {
         $this->addFlash('verify_email', 'Для окончания регистрации подтвердите свой Email');
 
@@ -37,13 +45,6 @@ class RegistrationService extends AbstractController
         $this->entityManager->flush();
 
         // generate a signed url and email it to the user
-        /** @var EmailVerifier|null $emailVerifier */
-        $emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-            (new TemplatedEmail())
-                ->from(new Address($_ENV['EMAIL_NO_REPLY'], $_ENV['EMAIL_FROM']))
-                ->to($user->getEmail())
-                ->subject('Подтвердите свой Email')
-                ->htmlTemplate('email/confirmation_email.html.twig')
-        );
+        $this->mailerService->sendEmailConfirmation($emailVerifier);
     }
 }
