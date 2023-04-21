@@ -1,0 +1,8 @@
+{% extends 'email/email_template.html.twig' %}
+{% block content %}
+<p>
+    Подтвердите изменение своего Email на {{ newEmail }}, перейдя по: <a href="{{ signedUrl|raw }}">ссылке</a>.
+    Действие ссылки истекает через {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+</p>
+
+{% endblock %}

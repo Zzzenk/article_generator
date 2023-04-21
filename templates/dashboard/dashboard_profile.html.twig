@@ -1,0 +1,80 @@
+{% extends 'dashboard/dashboard.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid" xmlns="http://www.w3.org/1999/html">
+        <h1 class="mt-4">Профиль</h1>
+        <div class="row">
+
+            <div class="col-xl-6">
+                <div class="card my-4">
+                    <div class="card-body">
+                        <p><b>Ваш API токен:</b> <span id="apiToken">{{ apiToken }}</span>
+                            <button class="btn btn-primary btn-sm ml-2" onclick="copyContent()"><i class="fa fa-clipboard" aria-hidden="true"></i></button>
+                        </p>
+                        <form action="{{ path('app_dashboard_profile_update') }}">
+                            <button class="btn btn-outline-primary" name="newToken" value="newToken">Создать новый</button>
+                        </form>
+                    </div>
+                </div>
+
+                {% for flash_error in app.flashes('profile_changed') %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ flash_error }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+                {% for flash_error in app.flashes('profile_update_error') %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ flash_error }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+                {% for flash_error in app.flashes('email_confirm') %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ flash_error }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+
+                <form action="{{ path('app_dashboard_profile_update') }}" id="update_profile" method="post">
+                    <div class="form-label-group">
+                        <input type="text" id="inputName" name="input[Name]" class="form-control" placeholder="Ваше имя"
+                               required value="{{ firstName }}" autofocus>
+                        <label for="inputName">Ваше имя</label>
+                    </div>
+                    <div class="form-label-group">
+                        <input type="email" id="inputEmail" name="input[Email]" class="form-control"
+                               placeholder="Ваш Email" required value="{{ email }}">
+                        <label for="inputEmail">Ваш Email</label>
+                    </div>
+
+                    <div class="form-label-group">
+                        <input type="password" id="inputPassword" name="input[Password]" class="form-control"
+                               placeholder="Пароль">
+                        <label for="inputPassword">Пароль</label>
+                    </div>
+
+                    <div class="form-label-group">
+                        <input type="password" id="inputConfirmPassword" name="input[ConfirmPassword]"
+                               class="form-control" placeholder="Подтверждение пароля">
+                        <label for="inputConfirmPassword">Подтверждение пароля</label>
+                    </div>
+
+                    <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Изменить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/copy-to-clipboard.js') }}"></script>
+{% endblock %}

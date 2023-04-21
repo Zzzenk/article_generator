@@ -1,0 +1,35 @@
+{% extends 'email/email_template.html.twig' %}
+{% block content %}
+<p>Наконец-таки ты с нами, дорогой <b>{{ email.toName }}</b>.</p>
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+    <tbody>
+    <tr>
+        <td align="right" class="image-column">
+            <img src="{{ email.image('@images/dinosaur-profile.jpg') }}" width="80" height="80">
+        </td>
+        <td align="left">
+            <p>
+                Теперь ты можешь вместе с нами участвовать в обсуждении жизни динозавров.
+                Научные исслодования про мезозойскую эру, сожительство с человеками и
+                многое-многое другое ждет тебя в Динозаврлэнде!
+            </p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+    <tbody>
+    <tr>
+        <td align="left">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tbody>
+                <tr>
+                    <td> <a href="{{ url('app_homepage') }}" target="_blank">Перейти на сайт</a> </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+{% endblock %}

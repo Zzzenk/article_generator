@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/ico" sizes="16x16" href="{{ asset('img/favicon.ico') }}">
+
+    <title>{% block title %}Article Generator - генератор статей{% endblock %}</title>
+    {% block stylesheets %}
+        <link href="{{ asset('css/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    {% endblock %}
+</head>
+
+<body>
+
+{% block navbar %}
+<nav class="navbar navbar-light bg-light static-top">
+    <div class="container">
+        <span class="navbar-brand"><a href="{{ path('app_homepage') }}"><img src="{{ asset('img/logo_with_title.png') }}" width="200"></a></span>
+        <a class="js-scroll-trigger" href="{{ path('app_homepage') }}#services">Сервисы</a>
+        <a class="js-scroll-trigger" href="{{ path('app_homepage') }}#author">Автор</a>
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <div>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <ul class="navbar-nav my-2 my-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img class="nav-profile-img rounded-circle" src="{{ asset('img/zenk.jpg') }}" width="40">
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{{ path('app_dashboard') }}">Личный кабинет</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ path('app_logout') }}">Выйти</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% else %}
+            <div>
+                <a class="col-3" href="{{ path('app_register') }}">Регистрация</a>
+                <a class="btn btn-primary" href="{{ path('app_login') }}">Войти</a>
+            </div>
+        {% endif %}
+    </div>
+</nav>
+{% endblock %}
+
+{% block body %}{% endblock %}
+
+{% block footer %}
+<footer class="footer bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
+                <p class="text-muted small mb-4 mb-lg-0">&copy; Article Generator 2023.</p>
+            </div>
+            <div class="col-lg-6 h-100 text-center text-lg-right my-auto">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item mr-3">
+                        <a href="https://github.com/zzzenk" target="_blank"><i class="fab fa-github fa-2x fa-fw" style="color: #464b53;"></i></a>
+                    </li>
+                    <li class="list-inline-item mr-3">
+                        <a href="https://t.me/zzzenk" target="_blank"><i class="fab fa-telegram fa-2x fa-fw"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
+</body>
+
+{% block javascripts %}
+<script src="{{ asset('js/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('js/jquery-easing/jquery.easing.min.js') }}"></script>
+<script src="{{ asset('js/scripts.js') }}"></script>
+{% endblock %}
+
+</html>

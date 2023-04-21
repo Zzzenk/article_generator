@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    images_upload_directory: '%kernel.project_dir%/public/uploads/article_images'
+    app.email_no_reply: '%env(EMAIL_NO_REPLY)%'
+    app.email_from: '%env(EMAIL_FROM)%'
 
 services:
     # default configuration for services in *this* file
@@ -19,6 +22,19 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    Twig\Extension\StringLoaderExtension:
+
+    App\Service\ArticleGeneratorService:
+        arguments:
+            $targetDirectory: '/uploads/article_images/'
+
+    App\Service\FileUploader:
+        arguments:
+            $targetDirectory: '%images_upload_directory%'
+
+    App\Service\ModuleService:
+        arguments:
+            $rootPath: '%kernel.project_dir%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

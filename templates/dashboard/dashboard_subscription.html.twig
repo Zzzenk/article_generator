@@ -1,0 +1,87 @@
+{% extends 'dashboard/dashboard.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid">
+        <h1 class="mt-4">Подписка</h1>
+        <div class="row">
+            <div class="col-xl-8">
+                {% if subscription != 'FREE' %}
+                <div class="alert alert-success" role="alert">
+                    Подписка <b>{{ subscription }}</b> оформлена до {{ expiresAt }}
+                </div>
+                {% endif %}
+                <section class="pricing py-2 row">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="card mb-5 mb-lg-0">
+                                    <div class="card-body">
+                                        <h5 class="card-title {% if subscription != 'FREE' %}text-muted{% endif %} text-uppercase text-center{% if subscription == 'FREE' %} current text-warning{% endif %}">{% if subscription == 'FREE' %}<i class="fas fa-check"></i>{% endif %}FREE</h5>
+                                        <h6 class="card-price text-center">$0<span class="period">/неделя</span></h6>
+                                        <hr>
+                                        <ul class="fa-ul">
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Создание двух статей за 2 часа</li>
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Базовые возможности генератора</li>
+                                            <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Продвинутые возможности генератора</li>
+                                            <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Свои шаблоны</li>
+                                        </ul>
+                                        {% if is_granted('ROLE_FREE') %}
+                                            <a href="#" class="btn btn-block btn-secondary text-uppercase" disabled>Текущая подписка</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card mb-5 mb-lg-0">
+                                    <div class="card-body">
+                                        <h5 class="card-title {% if subscription != 'PLUS' %}text-muted{% endif %} text-uppercase text-center{% if subscription == 'PLUS' %} current text-warning{% endif %}">{% if subscription == 'PLUS' %}<i class="fas fa-check"></i>{% endif %}PLUS</h5>
+                                        <h6 class="card-price text-center">$9<span class="period">/неделя</span></h6>
+                                        <hr>
+                                        <ul class="fa-ul">
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Создание двух статей за 2 часа</li>
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Базовые возможности генератора</li>
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Продвинутые возможности генератора</li>
+                                            <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Свои шаблоны</li>
+                                        </ul>
+                                        {% if is_granted('ROLE_PLUS') %}
+                                            <a href="#" class="btn btn-block btn-secondary text-uppercase" disabled>Текущая подписка</a>
+                                        {% elseif is_granted('ROLE_FREE') %}
+                                            <form action="{{ path('app_dashboard_subscription_order') }}" method="post">
+                                                <input type="hidden" value="PLUS" name="order_subscription">
+                                                <button class="btn btn-block btn-primary text-uppercase">Оформить</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title {% if subscription != 'PRO' %}text-muted{% endif %} text-uppercase text-center{% if subscription == 'PRO' %} current text-warning{% endif %}">{% if subscription == 'PRO' %}<i class="fas fa-check"></i>{% endif %}PRO</h5>
+                                        <h6 class="card-price text-center">$49<span class="period">/неделя</span></h6>
+                                        <hr>
+                                        <ul class="fa-ul">
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span><strong>Безлимитная генерация статей для вашего аккаунта</strong></li>
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Базовые возможности генератора</li>
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Продвинутые возможности генератора</li>
+                                            <li><span class="fa-li"><i class="fas fa-check"></i></span>Свои шаблоны</li>
+                                        </ul>
+                                        {% if is_granted('ROLE_PRO') %}
+                                            <a href="#" class="btn btn-block btn-secondary text-uppercase" disabled>Текущая подписка</a>
+                                        {% elseif is_granted("ROLE_PLUS") or is_granted("ROLE_FREE") %}
+                                            <form action="{{ path('app_dashboard_subscription_order') }}" method="post">
+                                                <input type="hidden" value="PRO" name="order_subscription">
+                                                <button class="btn btn-block btn-primary text-uppercase">Оформить</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

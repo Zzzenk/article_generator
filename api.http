@@ -1,0 +1,21 @@
+POST http://localhost/api/article
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer c5604d17c4ab25c7905f65f945695c87b471c8c4
+
+{
+   "theme": "tech",
+   "title": "Тестовая статья",
+   "keywords": {
+       "keyword0": "EXAMPLE",
+       "keyword1": "EXAMPLE",
+       "keyword2": "EXAMPLE",
+       "keyword3": "EXAMPLE",
+       "keyword4": "EXAMPLE",
+       "keyword5": "EXAAAAAMPLE",
+       "keyword6": "EXAMPLES"
+   },
+   "sizeFrom": 1,
+   "word1": null,
+   "images": ["https://via.placeholder.com/250x250"]
+}
