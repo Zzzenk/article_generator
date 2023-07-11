@@ -17,14 +17,14 @@ class ApiArticleGeneratorController extends AbstractController
         $token = substr($request->headers->get('Authorization'), 7);
         $generated = $articleGeneratorService->validateApiRequest($parameters, $token);
 
-        if (isset($generated['error'])) {
+        if (is_array($generated) && isset($generated['error'])) {
             return $this->json([
                 'error' => $generated['error'],
             ]);
         } else {
             return $this->json([
-                'title' => $generated['title'],
-                'article' => $generated['article'],
+                'title' => $generated->getTitle(),
+                'article' => $generated->getArticle(),
             ]);
         }
     }

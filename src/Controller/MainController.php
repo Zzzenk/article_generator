@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DTO\ArticleDataDTO;
 use App\Repository\UnregisteredUsersRepository;
 use App\Service\ArticleGeneratorService;
 use App\Service\UnregisteredUsersService;
@@ -19,7 +20,7 @@ class MainController extends AbstractController
         if ($this->isGranted('IS_AUTHENTICATED_FULLY')) {
             $path = '/dashboard/create_article';
         }
-        
+
         return $this->render('homepage.html.twig', [
             'path' => $path,
         ]);
@@ -29,20 +30,19 @@ class MainController extends AbstractController
     public function try(Request $request, ArticleGeneratorService $articleGeneratorService, UnregisteredUsersService $unregisteredUsersService, UnregisteredUsersRepository $unregisteredUsersRepository): Response
     {
         if ($request->request->get('title') != null) {
-            $requestArray = [
-                'theme' => $request->request->get('theme'),
-                'title' => $request->request->get('title'),
-                'word1' => $request->request->get('word1'),
-                'sizeFrom' => 2,
-            ];
+            $articleData = new ArticleDataDTO();
+            $articleData->setTheme($formData['theme'] ?? '');
+            $articleData->setTitle($formData['title'] ?? '');
+            $articleData->setSizeFrom(2);
+            $articleData->setWord1($formData['word1'] ?? '');
 
             if (!$this->isGranted('IS_AUTHENTICATED_FULLY') && $unregisteredUsersRepository->checkIP($request->getClientIp()) === true) {
-                $articleObject = $articleGeneratorService->generateArticle(null, $requestArray, [], false);
+                $articleObject = $articleGeneratorService->generateArticle(null, $articleData, [], false);
                 $article = $articleObject->getArticle();
 
                 $unregisteredUsersService->addIP($request->getClientIp());
             } elseif ($this->isGranted('IS_AUTHENTICATED_FULLY')) {
-                $articleObject = $articleGeneratorService->generateArticle(null, $requestArray, [], false);
+                $articleObject = $articleGeneratorService->generateArticle(null, $articleData, [], false);
                 $article = $articleObject->getArticle();
             } else {
                 $disabled = true;
@@ -50,7 +50,7 @@ class MainController extends AbstractController
         }
 
         return $this->render('try.html.twig', [
-            'title' => $requestArray['title'] ?? null,
+            'title' => $articleData->getTitle() ?? null,
             'article' => $article ?? null,
             'disabled' => $disabled ?? false,
         ]);

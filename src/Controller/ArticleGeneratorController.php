@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DTO\ArticleDataDTO;
 use App\Form\ArticleCreateType;
 use App\Repository\UserRepository;
 use App\Service\ArticleGeneratorService;
@@ -23,12 +24,23 @@ class ArticleGeneratorController extends AbstractController
 
         $form = $this->createForm(ArticleCreateType::class);
         $form->handleRequest($request);
+        $formData = $form->getData();
+
+        $articleData = new ArticleDataDTO();
+        $articleData->setTheme($formData['theme'] ?? '');
+        $articleData->setTitle($formData['title'] ?? '');
+        $articleData->setSizeFrom($formData['sizeFrom'] ?? 0);
+        $articleData->setSizeTo($formData['sizeTo'] ?? 0);
+        $articleData->setWord1($formData['word1'] ?? '');
+        $articleData->setWord1Count($formData['word1Count'] ?? 0);
+        $articleData->setWord2($formData['word2'] ?? '');
+        $articleData->setWord2Count($formData['word2Count'] ?? 0);
 
         if ($subscriptionService->checkDisabled2Hours($user) === false) {
             if ($form->isSubmitted() && $form->isValid()) {
                 $imageFileName = $articleGeneratorService->generateImagesPaths($form);
 
-                $articleObject = $articleGeneratorService->generateArticle($user, $form->getData(), $imageFileName, true);
+                $articleObject = $articleGeneratorService->generateArticle($user, $articleData, $imageFileName, true);
 
                 $article = $articleObject->getArticle();
                 $keyword = $articleObject->getKeywords();

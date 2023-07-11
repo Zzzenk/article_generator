@@ -110,14 +110,14 @@ class SubscriptionService
         if (array_search('ROLE_FREE', $user->getRoles()) == 1) {
             return 'FREE';
         } else if (array_search('ROLE_PLUS', $user->getRoles())) {
-            if ($user->getSubscriptionExpiresAt() < (new \DateTime('now'))) {
+            if ($user->getSubscriptionExpiresAt() < (new \DateTime())) {
                 $this->resetSubscription($user);
                 return 'FREE';
             } else {
                 return 'PLUS';
             }
         } else if (array_search('ROLE_PRO', $user->getRoles())) {
-            if ($user->getSubscriptionExpiresAt() < (new \DateTime('now'))) {
+            if ($user->getSubscriptionExpiresAt() < (new \DateTime())) {
                 $this->resetSubscription($user);
                 return 'FREE';
             } else {

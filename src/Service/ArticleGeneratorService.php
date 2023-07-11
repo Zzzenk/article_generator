@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\ArticleDataDTO;
 use App\Entity\ArticleContent;
 use App\Entity\ArticleImages;
 use App\Entity\GeneratedArticles;
@@ -34,32 +35,32 @@ class ArticleGeneratorService
 
     /**
      * @param UserInterface|null $user
-     * @param array $requestArray
+     * @param ArticleDataDTO $articleData
      * @param array|null $imageFileName
      * @param bool $insert
      * @return GeneratedArticles
      */
-    public function generateArticle(UserInterface|null $user, array $requestArray, array|null $imageFileName, bool $insert): GeneratedArticles
+    public function generateArticle(UserInterface|null $user, ArticleDataDTO $articleData, array|null $imageFileName, bool $insert): GeneratedArticles
     {
-        $theme = $requestArray['theme'];
-        $title = $requestArray['title'];
-        $sizeFrom = $requestArray['sizeFrom'] ?? 1;
-        $sizeTo = $requestArray['sizeTo'] ?? null;
-        $word1 = $requestArray['word1'] ?? null;
-        $word1Count = $requestArray['word1Count'] ?? 1;
-        $word2 = $requestArray['word2'] ?? null;
-        $word2Count = $requestArray['word2Count'] ?? null;
+        $theme = $articleData->getTheme();
+        $title = $articleData->getTitle();
+        $sizeFrom = $articleData->getSizeFrom() ?? 1;
+        $sizeTo = $articleData->getSizeTo() ?? null;
+        $word1 = $articleData->getWord1() ?? null;
+        $word1Count = $articleData->getWord1Count() ?? 1;
+        $word2 = $articleData->getWord2() ?? null;
+        $word2Count = $articleData->getWord2Count() ?? null;
 
         $article = implode(PHP_EOL . PHP_EOL, $this->templateSelect($user, $sizeFrom, $sizeTo, $imageFileName));
 
         $keywords = [
-            $requestArray['keyword0'] ?? null,
-            $requestArray['keyword1'] ?? null,
-            $requestArray['keyword2'] ?? null,
-            $requestArray['keyword3'] ?? null,
-            $requestArray['keyword4'] ?? null,
-            $requestArray['keyword5'] ?? null,
-            $requestArray['keyword6'] ?? null,
+            $articleData->getKeyword0(),
+            $articleData->getKeyword1(),
+            $articleData->getKeyword2(),
+            $articleData->getKeyword3(),
+            $articleData->getKeyword4(),
+            $articleData->getKeyword5(),
+            $articleData->getKeyword6(),
         ];
 
         $keywords = implode(',', $keywords);
@@ -84,25 +85,15 @@ class ArticleGeneratorService
             }
 
             if ($word1) {
-                $paragraph = explode(' ', $paragraph);
-                $word1 = "<b>" . $word1 . "</b>";
-                for ($i = 1; $i <= $word1Count; $i++) {
-                    array_splice($paragraph, rand(1, count($paragraph)-1), 0, $word1);
-                }
-                $paragraph = implode(' ', $paragraph);
+                $paragraph = $this->wordIntegrator($word1, $word1Count, $paragraph);
             }
             if ($word2) {
-                $paragraph = explode(' ', $paragraph);
-                $word2 = "<b>" . $word2 . "</b>";
-                for ($i = 1; $i <= $word2Count; $i++) {
-                    array_splice($paragraph, rand(1, count($paragraph)-1), 0, $word2);
-                }
-                $paragraph = implode(' ', $paragraph);
+                $paragraph = $this->wordIntegrator($word2, $word2Count, $paragraph);
             }
 
-            $article = preg_replace('{{{ paragraph }}}', $paragraph, $article, 1);
-            $article = preg_replace('{{{ paragraphs }}}', $paragraph, $article, 1);
-            $article = preg_replace('{{{ title }}}', $title, $article, 1);
+            $article = preg_replace('/{{ paragraph }}/', $paragraph, $article, 1);
+            $article = preg_replace('/{{ paragraphs }}/', $paragraph, $article, 1);
+            $article = preg_replace('/{{ title }}/', $title, $article, 1);
         }
 
         if ($imageFileName) {
@@ -111,23 +102,23 @@ class ArticleGeneratorService
                 if (str_contains($article, '{{ image }}') === false) {
                     break;
                 }
-                $article = preg_replace('{{{ image }}}', $image, $article, 1);
+                $article = preg_replace('/{{ image }}/', $image, $article, 1);
             }
 
-            preg_match_all('{{{ image }}}', $article, $matches[]);
+            preg_match_all('/{{ image }}/', $article, $matches[]);
 
             if (str_contains($article, '{{ image }}') === true) {
                 for ($i = count($matches); ; $i--) {
                     if ($i == 0) {
                         break;
                     }
-                    $article = preg_replace('{{{ image }}}', $imageFileName[rand(0, count($imageFileName) -1)], $article);
+                    $article = preg_replace('/{{ image }}/', $imageFileName[rand(0, count($imageFileName) -1)], $article);
                 }
             }
         }
 
         if ($insert === true) {
-            $this->addArticle($user, $title, $article, $requestArray, $imageFileName, $keywords);
+            $this->addArticle($user, $title, $article, $articleData, $imageFileName, $keywords);
         }
 
         $articleObject = new GeneratedArticles();
@@ -139,17 +130,36 @@ class ArticleGeneratorService
     }
 
     /**
+     * @param $word
+     * @param $wordCount
+     * @param $paragraph
+     * @return string
+     */
+    public function wordIntegrator($word, $wordCount, $paragraph): string
+    {
+        $paragraph = explode(' ', $paragraph);
+        $word = "<b>" . $word . "</b>";
+        for ($i = 1; $i <= $wordCount; $i++) {
+            array_splice($paragraph, rand(1, count($paragraph)-1), 0, $word);
+        }
+
+        return implode(' ', $paragraph);
+    }
+
+    /**
      * @param $user
      * @param string $title
      * @param string $article
-     * @param array $template
+     * @param ArticleDataDTO $articleData
      * @param array $imageFileName
      * @param string $keywords
      * @return void
      */
-    public function addArticle($user, string $title, string $article, array $template, array $imageFileName, string $keywords): void
+    public function addArticle($user, string $title, string $article, ArticleDataDTO $articleData, array $imageFileName, string $keywords): void
     {
-        foreach ($template as $key => $value) {
+        $templateArray = [];
+
+        foreach ($articleData as $key => $value) {
             $templateArray[] = $key . '_' . $value;
         }
         $template = implode(',', $templateArray);
@@ -160,7 +170,7 @@ class ArticleGeneratorService
             ->setArticle($article)
             ->setTitle($title)
             ->setTemplate($template)
-            ->setCreatedAt(new DateTime('now'))
+            ->setCreatedAt(new DateTime())
             ->setKeywords(serialize($keywords))
         ;
         $this->em->persist($newArticle);
@@ -296,18 +306,16 @@ class ArticleGeneratorService
      */
     public function checkMimeType(string $image)
     {
-        {
-            $mimes = array(
-                IMAGETYPE_GIF => "image/gif",
-                IMAGETYPE_JPEG => "image/jpg",
-                IMAGETYPE_PNG => "image/png",
-                IMAGETYPE_WEBP => "image/webp");
+        $mimes = array(
+            IMAGETYPE_GIF => "image/gif",
+            IMAGETYPE_JPEG => "image/jpg",
+            IMAGETYPE_PNG => "image/png",
+            IMAGETYPE_WEBP => "image/webp");
 
-            if (($image_type = exif_imagetype($image)) && (array_key_exists($image_type, $mimes))) {
-                return true;
-            } else {
-                return false;
-            }
+        if (($image_type = exif_imagetype($image)) && (array_key_exists($image_type, $mimes))) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -322,6 +330,8 @@ class ArticleGeneratorService
         $theme = $this->articleContentRepository->findOneBy(['code' => $parameters['theme']]);
 
         $errors = $this->validator->validate($parameters);
+
+        $articleData = new ArticleDataDTO();
 
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
@@ -340,39 +350,35 @@ class ArticleGeneratorService
             return [
                 'error' => 'Отсутствуют обязательные параметры: theme, title',
             ];
+        } elseif ($this->subscriptionService->checkSubscription($user) == 'FREE') {
+            $articleData->setKeyword1($parameters['keywords']['keyword1']);
+            $articleData->setKeyword2($parameters['keywords']['keyword2']);
+            $articleData->setKeyword3($parameters['keywords']['keyword3']);
+            $articleData->setKeyword4($parameters['keywords']['keyword4']);
+            $articleData->setKeyword5($parameters['keywords']['keyword5']);
+            $articleData->setKeyword6($parameters['keywords']['keyword6']);
+            $articleData->setWord2($parameters['word2'] ?? null);
+            $articleData->setWord2Count($parameters['word2Count'] ?? null);
+            $articleData->setImages($parameters['images'] ?? null);
         } else {
-            $requestArray = [
-                "theme" => $parameters['theme'],
-                "title" => $parameters['title'],
-                "keyword0" => $parameters['keywords']['keyword0'],
-                "keyword1" => $parameters['keywords']['keyword1'],
-                "keyword2" => $parameters['keywords']['keyword2'],
-                "keyword3" => $parameters['keywords']['keyword3'],
-                "keyword4" => $parameters['keywords']['keyword4'],
-                "keyword5" => $parameters['keywords']['keyword5'],
-                "keyword6" => $parameters['keywords']['keyword6'],
-                "sizeFrom" => $parameters['sizeFrom'] ?? null,
-                "sizeTo" => $parameters['sizeTo'] ?? null,
-                "word1" => $parameters['word1'] ?? null,
-                "word1Count" => $parameters['word1Count'] ?? null,
-                "word2" => $parameters['word2'] ?? null,
-                "word2Count" => $parameters['word2Count'] ?? null,
-                "images" => $parameters['images'] ?? null,
-            ];
+            $articleData->setTheme($parameters['theme']);
+            $articleData->setTitle($parameters['title']);
+            $articleData->setKeyword0($parameters['keywords']['keyword0']);
+            $articleData->setKeyword1($parameters['keywords']['keyword1']);
+            $articleData->setKeyword2($parameters['keywords']['keyword2']);
+            $articleData->setKeyword3($parameters['keywords']['keyword3']);
+            $articleData->setKeyword4($parameters['keywords']['keyword4']);
+            $articleData->setKeyword5($parameters['keywords']['keyword5']);
+            $articleData->setKeyword6($parameters['keywords']['keyword6']);
+            $articleData->setSizeFrom($parameters['sizeFrom'] ?? null);
+            $articleData->setSizeTo($parameters['sizeTo'] ?? null);
+            $articleData->setWord1($parameters['word1'] ?? null);
+            $articleData->setWord1Count($parameters['word1Count'] ?? null);
+            $articleData->setWord2($parameters['word2'] ?? null);
+            $articleData->setWord2Count($parameters['word2Count'] ?? null);
+            $articleData->setImages($parameters['images'] ?? null);
 
-            if ($this->subscriptionService->checkSubscription($user) == 'FREE') {
-                $requestArray['keyword1'] = null;
-                $requestArray['keyword2'] = null;
-                $requestArray['keyword3'] = null;
-                $requestArray['keyword4'] = null;
-                $requestArray['keyword5'] = null;
-                $requestArray['keyword6'] = null;
-                $requestArray['word2'] = null;
-                $requestArray['word2Count'] = null;
-                $requestArray['images'] = null;
-            }
-
-            return $this->generateArticle($user, $requestArray, $requestArray['images'], true);
+            return $this->generateArticle($user, $articleData, $articleData->getImages(), true);
         }
     }
 

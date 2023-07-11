@@ -45,6 +45,6 @@ class RegistrationService extends AbstractController
         $this->entityManager->flush();
 
         // generate a signed url and email it to the user
-        $this->mailerService->sendEmailConfirmation($emailVerifier);
+        $this->mailerService->sendEmailConfirmation($emailVerifier, $user);
     }
 }
